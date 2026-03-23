@@ -526,6 +526,27 @@ body {
   margin-bottom: 16px;
 }
 
+.telegram-setup {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.telegram-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.telegram-row .input-group input {
+  min-width: 220px;
+}
+
+.telegram-status-ok { color: var(--green); }
+.telegram-status-err { color: var(--red); }
+
 @media (max-width: 768px) {
   .app-header, .tab-bar, .tab-content { padding-left: 16px; padding-right: 16px; }
   .whale-grid { grid-template-columns: 1fr; }
@@ -607,6 +628,33 @@ body {
       <span class="section-badge badge-purple" id="whaleCount"></span>
     </div>
     <div class="whale-grid" id="whaleGrid"></div>
+  </div>
+
+  <div style="margin-top: 32px;">
+    <div class="section-header">
+      <div class="section-title">Telegram Alerts</div>
+      <span class="section-badge" id="telegramBadge" style="display:none;"></span>
+    </div>
+    <div class="telegram-setup">
+      <div class="telegram-row">
+        <div class="input-group">
+          <label>Bot Token</label>
+          <input type="password" id="telegramBotToken" placeholder="123456:ABC-DEF..." />
+        </div>
+        <div class="input-group">
+          <label>Chat ID</label>
+          <input type="text" id="telegramChatId" placeholder="e.g. 8648258173" />
+        </div>
+        <div class="input-group">
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="saveTelegramConfig()">Save</button>
+            <button class="btn" onclick="testTelegram()">Send Test Message</button>
+          </div>
+        </div>
+      </div>
+      <div id="telegramStatus" style="margin-top:8px;font-size:13px;"></div>
+    </div>
   </div>
 </div>
 
@@ -784,6 +832,9 @@ async function loadWhaleData() {
     }
 
     signals.sort((a, b) => b.whaleCount - a.whaleCount);
+
+    // Send new signals to Telegram
+    sendNewSignalAlerts(signals);
 
     document.getElementById('metricSignals').textContent = signals.length;
     if (signals.length > 0) {
@@ -976,6 +1027,106 @@ async function loadOdds() {
     content.innerHTML = '';
   }
 }
+
+// ===== Telegram Integration =====
+const previousSignalKeys = new Set();
+
+async function sendNewSignalAlerts(signals) {
+  for (const s of signals) {
+    const key = s.market + '|' + s.side;
+    if (previousSignalKeys.has(key)) continue;
+    previousSignalKeys.add(key);
+    try {
+      await fetch('/api/send-signal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          market: s.market,
+          whaleCount: s.whaleCount,
+          side: s.side,
+          avgEntry: (s.avgEntry * 100).toFixed(1) + '%',
+        }),
+      });
+    } catch {}
+  }
+}
+
+async function saveTelegramConfig() {
+  const botToken = document.getElementById('telegramBotToken').value.trim();
+  const chatId = document.getElementById('telegramChatId').value.trim();
+  const status = document.getElementById('telegramStatus');
+  if (!botToken || !chatId) {
+    status.className = 'telegram-status-err';
+    status.textContent = 'Both fields are required.';
+    return;
+  }
+  try {
+    const res = await fetch('/api/setup-telegram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ botToken, chatId }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      status.className = 'telegram-status-ok';
+      status.textContent = 'Config saved successfully.';
+      updateTelegramBadge(true);
+    } else {
+      status.className = 'telegram-status-err';
+      status.textContent = data.error || 'Failed to save.';
+    }
+  } catch (err) {
+    status.className = 'telegram-status-err';
+    status.textContent = 'Error: ' + err.message;
+  }
+}
+
+async function testTelegram() {
+  const status = document.getElementById('telegramStatus');
+  status.className = '';
+  status.textContent = 'Sending test message...';
+  try {
+    const res = await fetch('/api/test-telegram', { method: 'POST' });
+    const data = await res.json();
+    if (data.ok) {
+      status.className = 'telegram-status-ok';
+      status.textContent = 'Test message sent! Check your Telegram.';
+    } else {
+      status.className = 'telegram-status-err';
+      status.textContent = data.error || 'Failed to send.';
+    }
+  } catch (err) {
+    status.className = 'telegram-status-err';
+    status.textContent = 'Error: ' + err.message;
+  }
+}
+
+function updateTelegramBadge(configured) {
+  const badge = document.getElementById('telegramBadge');
+  badge.style.display = 'inline';
+  if (configured) {
+    badge.className = 'section-badge badge-green';
+    badge.textContent = 'Connected';
+  } else {
+    badge.className = 'section-badge';
+    badge.style.background = 'var(--yellow-bg)';
+    badge.style.color = 'var(--yellow)';
+    badge.textContent = 'Not configured';
+  }
+}
+
+// Load existing Telegram config on startup
+(async function loadTelegramStatus() {
+  try {
+    const res = await fetch('/api/get-telegram');
+    const data = await res.json();
+    if (data.configured) {
+      document.getElementById('telegramChatId').value = data.chatId;
+      document.getElementById('telegramBotToken').placeholder = 'Token saved (enter new to change)';
+    }
+    updateTelegramBadge(data.configured);
+  } catch {}
+})();
 
 // Auto-load whale data on page load
 loadWhaleData();

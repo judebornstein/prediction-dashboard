@@ -24,6 +24,13 @@ Built with zero dependencies — vanilla HTML, CSS, and JavaScript with a lightw
 - **Implied Probability** — Calculated and displayed for every line
 - **Persistent API Key** — Stored in localStorage, enter it once
 
+### Telegram Alerts
+
+- **Real-Time Notifications** — Automatically sends a Telegram message when the signal engine detects a new whale consensus (5+ traders aligned)
+- **Easy Setup** — Enter your bot token and chat ID in the dashboard UI, hit Save
+- **Test Button** — Verify the connection with a single click before going live
+- **Persistent Config** — Bot token and chat ID saved to a local config file, survives server restarts
+
 ## Quick Start
 
 ```bash
@@ -40,28 +47,39 @@ This starts the Node.js server on `http://localhost:3000` and opens the dashboar
 
 The Odds Analyzer tab requires a free API key from [The Odds API](https://the-odds-api.com/). Enter it in the input field — it's saved to localStorage automatically.
 
+### Telegram Setup
+
+1. Create a bot via [@BotFather](https://t.me/BotFather) on Telegram and copy the bot token
+2. Send `/start` to your new bot so it can message you
+3. Enter the bot token and your chat ID in the Telegram Alerts section at the bottom of the Whale Tracker tab
+4. Click **Send Test Message** to confirm it works
+
 ## Architecture
 
 ```
 prediction-dashboard/
-├── index.html      # Single-file frontend (HTML + CSS + JS)
-├── server.js       # Node.js proxy server (static files + API proxying)
-├── start.sh        # One-command launcher
+├── index.html              # Single-file frontend (HTML + CSS + JS)
+├── server.js               # Node.js server (static files + API proxy + Telegram)
+├── telegram-config.json    # Local Telegram credentials (gitignored)
+├── start.sh                # One-command launcher
 └── README.md
 ```
 
-**Why a proxy server?** Browser CORS policies block direct API calls to Polymarket and The Odds API from a local file. The Node.js server proxies these requests server-side:
+The Node.js server handles CORS by proxying external API calls and provides Telegram integration endpoints:
 
-| Frontend Route | Proxied To |
+| Route | Purpose |
 |---|---|
-| `/api/polymarket-data/*` | `data-api.polymarket.com/*` |
-| `/api/odds/*` | `api.the-odds-api.com/v4/*` |
+| `/api/polymarket-data/*` | Proxy to `data-api.polymarket.com` |
+| `/api/odds/*` | Proxy to `api.the-odds-api.com/v4` |
+| `/api/setup-telegram` | Save bot token + chat ID |
+| `/api/test-telegram` | Send a test message |
+| `/api/send-signal` | Send a whale signal alert |
 
 ## Tech Stack
 
 - **Frontend:** Vanilla HTML, CSS, JavaScript — no frameworks, no build step
-- **Backend:** Node.js `http` + `https` modules — no dependencies
-- **APIs:** [Polymarket Data API](https://docs.polymarket.com), [The Odds API](https://the-odds-api.com/)
+- **Backend:** Node.js `http` + `https` modules — zero dependencies
+- **APIs:** [Polymarket Data API](https://docs.polymarket.com), [The Odds API](https://the-odds-api.com/), [Telegram Bot API](https://core.telegram.org/bots/api)
 - **Design:** Dark theme, responsive layout, modern card-based UI
 
 ## License
