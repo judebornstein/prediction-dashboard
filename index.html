@@ -5,723 +5,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prediction Dashboard</title>
 <style>
+/* === STYLES === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg-primary: #0a0e17;
-  --bg-secondary: #111827;
-  --bg-card: #1a2235;
-  --bg-card-hover: #1f2a40;
-  --border: #2a3550;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --green: #10b981;
-  --green-bg: rgba(16, 185, 129, 0.12);
-  --red: #ef4444;
-  --red-bg: rgba(239, 68, 68, 0.12);
-  --yellow: #f59e0b;
-  --yellow-bg: rgba(245, 158, 11, 0.12);
-  --purple: #8b5cf6;
-  --purple-bg: rgba(139, 92, 246, 0.12);
+  --bg0: #0a0e17; --bg1: #111827; --bg2: #1a2235; --bg2h: #1f2a40; --brd: #2a3550;
+  --t1: #e2e8f0; --t2: #94a3b8; --t3: #64748b;
+  --blue: #3b82f6; --blue-h: #2563eb; --green: #10b981; --red: #ef4444; --yellow: #f59e0b; --purple: #8b5cf6;
+  --green-bg: rgba(16,185,129,.12); --red-bg: rgba(239,68,68,.12); --yellow-bg: rgba(245,158,11,.12); --purple-bg: rgba(139,92,246,.12);
 }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.5;
-}
-
-.app-header {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.app-title {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-title span {
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.last-updated {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.tab-bar {
-  display: flex;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-}
-
-.tab-btn {
-  padding: 12px 24px;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.tab-btn:hover { color: var(--text-primary); }
-.tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg0); color: var(--t1); min-height: 100vh; line-height: 1.5; }
+.mono { font-family: 'SF Mono','Fira Code',monospace; }
+.app-header { background: var(--bg1); border-bottom: 1px solid var(--brd); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+.app-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.app-title span { background: linear-gradient(135deg,var(--blue),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.last-updated, .last-updated-row, .countdown-text { font-size: 12px; color: var(--t3); }
+.last-updated-row { margin-bottom: 24px; padding-left: 4px; }
+.countdown-text { font-variant-numeric: tabular-nums; }
+.tab-bar { display: flex; background: var(--bg1); border-bottom: 1px solid var(--brd); padding: 0 32px; }
+.tab-btn { padding: 12px 24px; background: none; border: none; color: var(--t2); font-size: 14px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
+.tab-btn:hover { color: var(--t1); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
 .tab-content { display: none; padding: 24px 32px; }
 .tab-content.active { display: block; }
-
-/* Metric Cards */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.metric-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.metric-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.metric-value {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.metric-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.metric-value.green { color: var(--green); }
-.metric-value.blue { color: var(--accent); }
-.metric-value.purple { color: var(--purple); }
-.metric-value.yellow { color: var(--yellow); }
-
-.last-updated-row {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-  padding-left: 4px;
-}
-
-/* Progress Bar */
-.progress-container {
-  margin-bottom: 24px;
-  display: none;
-}
-
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px; margin-bottom: 8px; }
+.metric-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; }
+.metric-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 8px; }
+.metric-value { font-size: 28px; font-weight: 700; }
+.metric-sub { font-size: 12px; color: var(--t2); margin-top: 4px; }
+.metric-value.green { color: var(--green); } .metric-value.blue { color: var(--blue); }
+.metric-value.purple { color: var(--purple); } .metric-value.yellow { color: var(--yellow); }
+.progress-container { margin-bottom: 24px; display: none; }
 .progress-container.visible { display: block; }
-
-.progress-bar-track {
-  height: 6px;
-  background: var(--bg-card);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--purple));
-  border-radius: 3px;
-  transition: width 0.3s ease;
-  width: 0%;
-}
-
-.progress-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-/* Buttons */
-.btn {
-  padding: 8px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn:hover { background: var(--bg-card-hover); border-color: var(--accent); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.btn-primary:hover { background: var(--accent-hover); }
-
-.btn-trade {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border: none;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.btn-trade:hover { opacity: 0.9; transform: translateY(-1px); }
-
-.btn-trade-lg {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-  width: 100%;
-  margin-top: 12px;
-}
-
-.btn-trade-lg:hover { opacity: 0.9; transform: translateY(-1px); }
-
-/* Countdown */
-.countdown-text {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.refresh-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-/* Section Headers */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.section-badge {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-
+.progress-bar-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--purple)); border-radius: 3px; transition: width .3s; width: 0%; }
+.progress-text { font-size: 13px; color: var(--t2); }
+.btn { padding: 8px 20px; border-radius: 8px; border: 1px solid var(--brd); background: var(--bg2); color: var(--t1); font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { background: var(--bg2h); border-color: var(--blue); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--blue); border-color: var(--blue); }
+.btn-primary:hover { background: var(--blue-h); }
+.btn-trade, .btn-trade-lg { background: linear-gradient(135deg,#6366f1,#8b5cf6); border: none; color: white; cursor: pointer; text-decoration: none; transition: all .2s; }
+.btn-trade { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.btn-trade-lg { padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 12px; }
+.btn-trade:hover, .btn-trade-lg:hover { opacity: .9; transform: translateY(-1px); }
+.refresh-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-title { font-size: 16px; font-weight: 600; }
+.section-badge { font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
 .badge-green { background: var(--green-bg); color: var(--green); }
 .badge-purple { background: var(--purple-bg); color: var(--purple); }
-
-/* Signal Cards */
-.signal-list {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.signal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  gap: 16px;
-  align-items: center;
-  transition: border-color 0.2s;
-}
-
-.signal-card:hover { border-color: var(--accent); }
-
-.signal-rank {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.signal-rank.top { background: linear-gradient(135deg, var(--accent), var(--purple)); }
-.signal-rank.normal { background: var(--bg-secondary); color: var(--text-secondary); }
-
-.signal-info h3 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-
-.signal-meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.signal-meta span {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.signal-meta .value { color: var(--text-primary); font-weight: 600; }
-
-.signal-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.signal-side {
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  min-width: 80px;
-}
-
+.card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; transition: border-color .2s; }
+.card:hover { border-color: var(--blue); }
+.signal-list { display: grid; gap: 12px; margin-bottom: 32px; }
+.signal-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 16px; align-items: center; transition: border-color .2s; }
+.signal-card:hover { border-color: var(--blue); }
+.signal-rank { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+.signal-rank.top { background: linear-gradient(135deg,var(--blue),var(--purple)); }
+.signal-rank.normal { background: var(--bg1); color: var(--t2); }
+.signal-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+.signal-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.signal-meta span { font-size: 12px; color: var(--t2); }
+.signal-meta .value { color: var(--t1); font-weight: 600; }
+.signal-right { display: flex; align-items: center; gap: 12px; }
+.signal-side { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center; min-width: 80px; }
 .signal-side.yes { background: var(--green-bg); color: var(--green); }
 .signal-side.no { background: var(--red-bg); color: var(--red); }
-
-/* Freshness badges */
-.freshness-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
+.freshness-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; }
 .freshness-badge.active { background: var(--green-bg); color: var(--green); }
 .freshness-badge.stale { background: var(--yellow-bg); color: var(--yellow); }
 .freshness-badge.old { background: var(--red-bg); color: var(--red); }
-
-/* Whale Cards */
-.whale-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 16px;
-}
-
-.whale-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: border-color 0.2s;
-}
-
-.whale-card:hover { border-color: var(--accent); }
-
-.whale-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.whale-rank-badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-muted);
-}
-
-.whale-wallet {
-  font-size: 13px;
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-}
-
-.whale-profit {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.whale-profit.positive { color: var(--green); }
-.whale-profit.negative { color: var(--red); }
-
-.whale-positions {
-  margin-top: 12px;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
-}
-
-.whale-positions-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.position-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 12px;
-}
-
-.position-info-col {
-  flex: 1;
-  min-width: 0;
-  margin-right: 12px;
-}
-
-.position-info-col .position-market {
-  display: block;
-  margin-right: 0;
-}
-
-.position-details {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.pnl-positive { color: var(--green); font-weight: 600; }
-.pnl-negative { color: var(--red); font-weight: 600; }
-
-.position-item + .position-item {
-  border-top: 1px solid rgba(42, 53, 80, 0.5);
-}
-
-.position-market {
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.position-side {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 11px;
-  margin-right: 8px;
-}
-
+.whale-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(380px,1fr)); gap: 16px; }
+.whale-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; transition: border-color .2s; }
+.whale-card:hover { border-color: var(--blue); }
+.whale-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.whale-rank-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg1); color: var(--t3); }
+.whale-wallet { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
+.whale-wallet, .position-size { font-family: 'SF Mono','Fira Code',monospace; }
+.whale-profit { font-size: 20px; font-weight: 700; }
+.whale-profit.positive, .pnl-positive { color: var(--green); font-weight: 600; }
+.whale-profit.negative, .pnl-negative { color: var(--red); font-weight: 600; }
+.whale-positions { margin-top: 12px; border-top: 1px solid var(--brd); padding-top: 12px; }
+.whale-positions-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 8px; }
+.position-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 12px; }
+.position-item + .position-item { border-top: 1px solid rgba(42,53,80,.5); }
+.position-info-col { flex: 1; min-width: 0; margin-right: 12px; }
+.position-info-col .position-market { display: block; }
+.position-market { color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.position-details { display: block; font-size: 11px; color: var(--t3); margin-top: 2px; }
+.position-side { padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; margin-right: 8px; }
 .position-side.yes { background: var(--green-bg); color: var(--green); }
 .position-side.no { background: var(--red-bg); color: var(--red); }
-
-.position-size {
-  color: var(--text-primary);
-  font-weight: 600;
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  white-space: nowrap;
-}
-
-.position-trade-link {
-  color: var(--purple);
-  font-size: 11px;
-  font-weight: 600;
-  text-decoration: none;
-  margin-left: 8px;
-  white-space: nowrap;
-}
-
+.position-size { color: var(--t1); font-weight: 600; white-space: nowrap; }
+.position-trade-link { color: var(--purple); font-size: 11px; font-weight: 600; text-decoration: none; margin-left: 8px; white-space: nowrap; }
 .position-trade-link:hover { text-decoration: underline; }
-
-/* Recommended Positions Tab */
-.rec-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 16px;
-}
-
-.rec-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: border-color 0.2s;
-}
-
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(340px,1fr)); gap: 16px; }
+.rec-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; transition: border-color .2s; }
 .rec-card:hover { border-color: var(--purple); }
-
-.rec-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.rec-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-  flex: 1;
-  margin-right: 12px;
-}
-
-.rec-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-
-.rec-stat {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.rec-stat .label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 2px; }
-.rec-stat .val { font-size: 15px; font-weight: 700; color: var(--text-primary); }
-
-.rec-entry-info {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* Tab 2 - Odds */
-.odds-controls {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.input-group label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-}
-
-.input-group input, .input-group select {
-  padding: 8px 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.input-group input:focus, .input-group select:focus {
-  border-color: var(--accent);
-}
-
+.rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.rec-card-title { font-size: 15px; font-weight: 600; line-height: 1.3; flex: 1; margin-right: 12px; }
+.rec-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+.rec-stat { font-size: 12px; color: var(--t2); }
+.rec-stat .label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 2px; }
+.rec-stat .val { font-size: 15px; font-weight: 700; color: var(--t1); }
+.rec-entry-info { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--brd); font-size: 12px; color: var(--t2); }
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); }
+.input-group input, .input-group select { padding: 8px 14px; background: var(--bg2); border: 1px solid var(--brd); border-radius: 8px; color: var(--t1); font-size: 14px; outline: none; transition: border-color .2s; }
+.input-group input:focus, .input-group select:focus { border-color: var(--blue); }
 .input-group input { min-width: 280px; }
 .input-group select { min-width: 160px; }
-
-.game-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-
-.game-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.game-matchup {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.game-time {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.odds-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.odds-table th {
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  background: rgba(17, 24, 39, 0.5);
-  border-bottom: 1px solid var(--border);
-}
-
-.odds-table td {
-  padding: 10px 16px;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(42, 53, 80, 0.3);
-}
-
+.odds-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+.game-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+.game-header { padding: 16px 20px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
+.game-matchup { font-size: 16px; font-weight: 600; }
+.game-time { font-size: 12px; color: var(--t3); }
+.odds-table { width: 100%; border-collapse: collapse; }
+.odds-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); background: rgba(17,24,39,.5); border-bottom: 1px solid var(--brd); }
+.odds-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid rgba(42,53,80,.3); }
 .odds-table tr:last-child td { border-bottom: none; }
-
-.odds-table td:first-child {
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.odds-cell {
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  font-weight: 600;
-}
-
-.odds-cell.best {
-  color: var(--green);
-  background: var(--green-bg);
-  border-radius: 6px;
-  padding: 4px 10px;
-}
-
-.implied-prob {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-
-.empty-state h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-}
-
+.odds-table td:first-child { font-weight: 500; color: var(--t2); }
+.odds-cell { font-family: 'SF Mono','Fira Code',monospace; font-weight: 600; }
+.odds-cell.best { color: var(--green); background: var(--green-bg); border-radius: 6px; padding: 4px 10px; }
+.implied-prob { font-size: 11px; color: var(--t3); font-weight: 400; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--t3); }
+.empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--t2); }
 .empty-state p { font-size: 13px; }
-
-.error-msg {
-  background: var(--red-bg);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: var(--red);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-
-.telegram-setup {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.telegram-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.telegram-row .input-group input {
-  min-width: 220px;
-}
-
+.error-msg { background: var(--red-bg); border: 1px solid rgba(239,68,68,.3); color: var(--red); padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+.telegram-setup { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; }
+.telegram-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.telegram-row .input-group input { min-width: 220px; }
 .telegram-status-ok { color: var(--green); }
 .telegram-status-err { color: var(--red); }
-
 @media (max-width: 768px) {
   .app-header, .tab-bar, .tab-content { padding-left: 16px; padding-right: 16px; }
-  .whale-grid { grid-template-columns: 1fr; }
-  .rec-grid { grid-template-columns: 1fr; }
-  .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .whale-grid, .rec-grid { grid-template-columns: 1fr; }
+  .metrics-row { grid-template-columns: repeat(2,1fr); }
   .signal-card { grid-template-columns: auto 1fr; }
   .signal-right { grid-column: 2; justify-self: start; }
 }
@@ -737,9 +155,7 @@ body {
     </svg>
     <span>Prediction Dashboard</span>
   </div>
-  <div class="header-right">
-    <span class="last-updated" id="lastUpdated"></span>
-  </div>
+  <div class="header-right"><span class="last-updated" id="lastUpdated"></span></div>
 </header>
 
 <nav class="tab-bar">
@@ -748,37 +164,18 @@ body {
   <button class="tab-btn" data-tab="odds">Odds Analyzer</button>
 </nav>
 
-<!-- TAB 1: Whale Tracker -->
 <div class="tab-content active" id="tab-whales">
   <div class="metrics-row">
-    <div class="metric-card">
-      <div class="metric-label">Traders Analyzed</div>
-      <div class="metric-value blue" id="metricTraders">--</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Signals Found</div>
-      <div class="metric-value purple" id="metricSignals">--</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Strongest Signal</div>
-      <div class="metric-value green" id="metricStrongest">--</div>
-      <div class="metric-sub" id="metricStrongestName"></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Positions Tracked</div>
-      <div class="metric-value yellow" id="metricPositions">--</div>
-    </div>
+    <div class="metric-card"><div class="metric-label">Traders Analyzed</div><div class="metric-value blue" id="metricTraders">--</div></div>
+    <div class="metric-card"><div class="metric-label">Signals Found</div><div class="metric-value purple" id="metricSignals">--</div></div>
+    <div class="metric-card"><div class="metric-label">Strongest Signal</div><div class="metric-value green" id="metricStrongest">--</div><div class="metric-sub" id="metricStrongestName"></div></div>
+    <div class="metric-card"><div class="metric-label">Positions Tracked</div><div class="metric-value yellow" id="metricPositions">--</div></div>
   </div>
-
   <div class="last-updated-row" id="lastUpdatedRow"></div>
-
   <div class="progress-container" id="progressContainer">
-    <div class="progress-text" id="progressText">Loading traders...</div>
-    <div class="progress-bar-track">
-      <div class="progress-bar-fill" id="progressBar"></div>
-    </div>
+    <div class="progress-text" id="progressText">Loading...</div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBar"></div></div>
   </div>
-
   <div class="refresh-row">
     <button class="btn btn-primary" id="refreshWhales" onclick="loadWhaleData()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -786,839 +183,518 @@ body {
     </button>
     <span class="countdown-text" id="countdownText"></span>
   </div>
-
   <div id="whaleError"></div>
-
-  <div id="signalSection" style="display:none;">
-    <div class="section-header">
-      <div class="section-title">Whale Consensus Signals</div>
-      <span class="section-badge badge-green" id="signalCount"></span>
-    </div>
+  <div id="signalSection" style="display:none">
+    <div class="section-header"><div class="section-title">Whale Consensus Signals</div><span class="section-badge badge-green" id="signalCount"></span></div>
     <div class="signal-list" id="signalList"></div>
   </div>
-
-  <div id="whaleSection" style="display:none;">
-    <div class="section-header">
-      <div class="section-title">Top Whale Profiles</div>
-      <span class="section-badge badge-purple" id="whaleCount"></span>
-    </div>
+  <div id="whaleSection" style="display:none">
+    <div class="section-header"><div class="section-title">Top Whale Profiles</div><span class="section-badge badge-purple" id="whaleCount"></span></div>
     <div class="whale-grid" id="whaleGrid"></div>
   </div>
-
-  <div style="margin-top: 32px;">
-    <div class="section-header">
-      <div class="section-title">Telegram Alerts</div>
-      <span class="section-badge" id="telegramBadge" style="display:none;"></span>
-    </div>
+  <div style="margin-top:32px">
+    <div class="section-header"><div class="section-title">Telegram Alerts</div><span class="section-badge" id="telegramBadge" style="display:none"></span></div>
     <div class="telegram-setup">
       <div class="telegram-row">
-        <div class="input-group">
-          <label>Bot Token</label>
-          <input type="password" id="telegramBotToken" placeholder="123456:ABC-DEF..." />
-        </div>
-        <div class="input-group">
-          <label>Chat ID</label>
-          <input type="text" id="telegramChatId" placeholder="e.g. 8648258173" />
-        </div>
-        <div class="input-group">
-          <label>&nbsp;</label>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" onclick="saveTelegramConfig()">Save</button>
-            <button class="btn" onclick="testTelegram()">Send Test Message</button>
-          </div>
-        </div>
+        <div class="input-group"><label>Bot Token</label><input type="password" id="telegramBotToken" placeholder="123456:ABC-DEF..."/></div>
+        <div class="input-group"><label>Chat ID</label><input type="text" id="telegramChatId" placeholder="e.g. 8648258173"/></div>
+        <div class="input-group"><label>&nbsp;</label><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="saveTelegramConfig()">Save</button><button class="btn" onclick="testTelegram()">Test</button></div></div>
       </div>
-      <div id="telegramStatus" style="margin-top:8px;font-size:13px;"></div>
+      <div id="telegramStatus" style="margin-top:8px;font-size:13px"></div>
     </div>
   </div>
 </div>
 
-<!-- TAB 2: Recommended Positions -->
 <div class="tab-content" id="tab-recommended">
-  <div class="section-header">
-    <div class="section-title">Top Whale Conviction Picks</div>
-    <span class="section-badge badge-purple" id="recCount">0 picks</span>
-  </div>
-  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">
-    Markets where multiple top-100 whales are aligned. Ranked by conviction score. Only showing markets with whale activity in the last 48 hours.
-  </p>
-  <div class="rec-grid" id="recGrid">
-    <div class="empty-state">
-      <h3>No recommendations yet</h3>
-      <p>Load whale data from the Whale Tracker tab to see recommended positions.</p>
-    </div>
-  </div>
+  <div class="section-header"><div class="section-title">Top Whale Conviction Picks</div><span class="section-badge badge-purple" id="recCount">0 picks</span></div>
+  <p style="font-size:13px;color:var(--t2);margin-bottom:20px">Markets where multiple top-100 whales are aligned. Ranked by conviction. Only showing markets with activity in the last 48 hours.</p>
+  <div class="rec-grid" id="recGrid"><div class="empty-state"><h3>No recommendations yet</h3><p>Load whale data from the Whale Tracker tab.</p></div></div>
 </div>
 
-<!-- TAB 3: Odds Analyzer -->
 <div class="tab-content" id="tab-odds">
   <div class="odds-controls">
-    <div class="input-group">
-      <label>The Odds API Key</label>
-      <input type="text" id="oddsApiKey" placeholder="Enter your API key..." />
-    </div>
-    <div class="input-group">
-      <label>Sport</label>
-      <select id="sportSelect">
-        <option value="basketball_nba">NBA</option>
-        <option value="americanfootball_nfl">NFL</option>
-        <option value="baseball_mlb">MLB</option>
-        <option value="icehockey_nhl">NHL</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <label>&nbsp;</label>
-      <button class="btn btn-primary" onclick="loadOdds()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Fetch Odds
-      </button>
-    </div>
+    <div class="input-group"><label>The Odds API Key</label><input type="text" id="oddsApiKey" placeholder="Enter your API key..."/></div>
+    <div class="input-group"><label>Sport</label><select id="sportSelect"><option value="basketball_nba">NBA</option><option value="americanfootball_nfl">NFL</option><option value="baseball_mlb">MLB</option><option value="icehockey_nhl">NHL</option></select></div>
+    <div class="input-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadOdds()">Fetch Odds</button></div>
   </div>
-
   <div id="oddsError"></div>
-  <div id="oddsContent">
-    <div class="empty-state">
-      <h3>No odds loaded</h3>
-      <p>Enter your Odds API key and click Fetch Odds to get started.</p>
-    </div>
-  </div>
+  <div id="oddsContent"><div class="empty-state"><h3>No odds loaded</h3><p>Enter your Odds API key and click Fetch Odds.</p></div></div>
 </div>
 
 <script>
-// ===== Tab switching =====
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-  });
-});
+/* === SETTINGS === */
+var REFRESH_SEC = 30;
+var MIN_WHALES = 5;
+var BATCH_SIZE = 10;
+var slugCache = {};
+var previousSignalKeys = new Set();
+var isFirstLoad = true;
+var isRefreshing = false;
+var countdownTimer = null;
+var countdownSec = REFRESH_SEC;
+var lastSignals = [];
 
-// ===== Utility =====
-function formatMoney(n) {
-  if (n == null) return '$0';
-  const abs = Math.abs(n);
-  if (abs >= 1e6) return (n < 0 ? '-' : '') + '$' + (abs / 1e6).toFixed(1) + 'M';
-  if (abs >= 1e3) return (n < 0 ? '-' : '') + '$' + (abs / 1e3).toFixed(1) + 'K';
-  return '$' + n.toFixed(0);
+/* === API === */
+function fetchJSON(url) {
+  return fetch(url).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
 }
 
-function shortWallet(w) {
-  if (!w) return 'Unknown';
-  return w.slice(0, 6) + '...' + w.slice(-4);
+function processBatch(items, fn, onProgress) {
+  var results = [];
+  var i = 0;
+  function next() {
+    if (i >= items.length) return Promise.resolve(results);
+    var batch = items.slice(i, i + BATCH_SIZE);
+    return Promise.allSettled(batch.map(fn)).then(function(r) {
+      results = results.concat(r);
+      i += BATCH_SIZE;
+      if (onProgress) onProgress(Math.min(i, items.length), items.length);
+      return next();
+    });
+  }
+  return next();
 }
 
-function setProgress(pct, text) {
-  const container = document.getElementById('progressContainer');
-  const bar = document.getElementById('progressBar');
-  const txt = document.getElementById('progressText');
-  container.classList.add('visible');
-  bar.style.width = pct + '%';
-  txt.textContent = text;
+function postJSON(url, data) {
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function(r) { return r.json(); });
 }
 
-function hideProgress() {
-  document.getElementById('progressContainer').classList.remove('visible');
-}
+/* === UI HELPERS === */
+function $(id) { return document.getElementById(id); }
 
 function escapeHtml(str) {
   if (!str) return '';
-  const d = document.createElement('div');
+  var d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
 }
 
-function timeAgo(timestamp) {
-  if (!timestamp) return 'Unknown';
-  const now = Date.now();
-  const diff = now - new Date(timestamp).getTime();
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+function formatMoney(n) {
+  if (n == null) return '$0';
+  var abs = Math.abs(n);
+  var sign = n < 0 ? '-' : '';
+  if (abs >= 1e6) return sign + '$' + (abs / 1e6).toFixed(1) + 'M';
+  if (abs >= 1e3) return sign + '$' + (abs / 1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(0);
+}
+
+function shortWallet(w) {
+  return w ? w.slice(0, 6) + '...' + w.slice(-4) : 'Unknown';
+}
+
+function cents(price) {
+  return (price * 100).toFixed(1) + '¢';
+}
+
+function timeAgo(ts) {
+  if (!ts) return 'Unknown';
+  var diff = Date.now() - new Date(ts).getTime();
+  var hours = Math.floor(diff / 3600000);
+  var days = Math.floor(diff / 86400000);
   if (hours < 1) return 'Less than 1 hour ago';
   if (hours < 24) return hours + ' hour' + (hours === 1 ? '' : 's') + ' ago';
   return days + ' day' + (days === 1 ? '' : 's') + ' ago';
 }
 
-function formatDate(timestamp) {
-  if (!timestamp) return '';
-  const d = new Date(timestamp);
-  if (isNaN(d.getTime())) return '';
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const month = months[d.getMonth()];
-  const day = d.getDate();
-  const year = d.getFullYear();
-  let hours = d.getHours();
-  const mins = d.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
-  return `${month} ${day}, ${year} at ${hours}:${mins} ${ampm}`;
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function formatDate(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  if (isNaN(d)) return '';
+  var h = d.getHours(), ampm = h >= 12 ? 'PM' : 'AM';
+  return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' at ' + (h % 12 || 12) + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ampm;
 }
 
-function formatDateShort(timestamp) {
-  if (!timestamp) return '';
-  const d = new Date(timestamp);
-  if (isNaN(d.getTime())) return '';
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${months[d.getMonth()]} ${d.getDate()}`;
+function formatDateShort(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  return isNaN(d) ? '' : MONTHS[d.getMonth()] + ' ' + d.getDate();
 }
 
-function getFreshnessBadge(latestEntryTimestamp, highestEntryPrice, currentPrice) {
-  const now = Date.now();
-  const entryTime = new Date(latestEntryTimestamp).getTime();
-  const hoursAgo = (now - entryTime) / 3600000;
-  const daysAgo = hoursAgo / 24;
-
-  let timeBadge = '';
-  if (daysAgo > 7) {
-    timeBadge = '<span class="freshness-badge old">Old signal</span>';
-  } else if (hoursAgo > 48) {
-    timeBadge = '<span class="freshness-badge stale">Going stale</span>';
-  }
-
-  let priceBadge = '';
-  if (highestEntryPrice && currentPrice && Math.abs(highestEntryPrice - currentPrice) <= 5) {
-    priceBadge = '<span class="freshness-badge active">Still active</span>';
-  }
-
-  return (priceBadge + ' ' + timeBadge).trim();
+function getFreshnessBadge(latest, highPrice, curPrice) {
+  var hoursAgo = (Date.now() - new Date(latest).getTime()) / 3600000;
+  var time = '';
+  if (hoursAgo > 168) time = '<span class="freshness-badge old">Old signal</span>';
+  else if (hoursAgo > 48) time = '<span class="freshness-badge stale">Going stale</span>';
+  var price = (highPrice && curPrice && Math.abs(highPrice - curPrice) <= 5) ? '<span class="freshness-badge active">Still active</span>' : '';
+  return (price + ' ' + time).trim();
 }
-
-// ===== Market slug cache =====
-// Maps conditionId/market key -> eventSlug (from position data directly)
-const slugCache = {};
 
 function polymarketUrl(slug) {
-  if (!slug) return null;
-  return 'https://polymarket.com/event/' + slug;
+  return slug ? 'https://polymarket.com/event/' + slug : null;
 }
 
-function tradeButton(slug, large) {
-  const url = polymarketUrl(slug);
+function tradeBtn(slug, large) {
+  var url = polymarketUrl(slug);
   if (!url) return '';
-  if (large) {
-    return `<a class="btn-trade-lg" href="${url}" target="_blank" rel="noopener">Trade on Polymarket &rarr;</a>`;
-  }
-  return `<a class="btn-trade" href="${url}" target="_blank" rel="noopener">Trade &rarr;</a>`;
+  if (large) return '<a class="btn-trade-lg" href="' + url + '" target="_blank" rel="noopener">Trade on Polymarket &rarr;</a>';
+  return '<a class="btn-trade" href="' + url + '" target="_blank" rel="noopener">Trade &rarr;</a>';
 }
 
-function tradeLinkSmall(slug) {
-  const url = polymarketUrl(slug);
-  if (!url) return '';
-  return `<a class="position-trade-link" href="${url}" target="_blank" rel="noopener">Trade</a>`;
+function tradeLink(slug) {
+  var url = polymarketUrl(slug);
+  return url ? '<a class="position-trade-link" href="' + url + '" target="_blank" rel="noopener">Trade</a>' : '';
 }
 
-// ===== Auto-refresh countdown =====
-const REFRESH_INTERVAL = 30;
-let countdownSeconds = REFRESH_INTERVAL;
-let countdownTimer = null;
-let isRefreshing = false;
+function setProgress(pct, text) {
+  $('progressContainer').classList.add('visible');
+  $('progressBar').style.width = pct + '%';
+  $('progressText').textContent = text;
+}
 
-function startCountdown() {
-  if (countdownTimer) clearInterval(countdownTimer);
-  countdownSeconds = REFRESH_INTERVAL;
-  updateCountdownDisplay();
-  countdownTimer = setInterval(() => {
-    countdownSeconds--;
-    updateCountdownDisplay();
-    if (countdownSeconds <= 0) {
-      clearInterval(countdownTimer);
-      if (!isRefreshing) loadWhaleData();
+/* === SIGNALS === */
+function buildSignals(whaleData) {
+  var marketMap = {};
+  for (var w = 0; w < whaleData.length; w++) {
+    var trader = whaleData[w].trader;
+    var positions = whaleData[w].positions;
+    for (var p = 0; p < positions.length; p++) {
+      var pos = positions[p];
+      var key = pos.conditionId || pos.slug || pos.market || pos.title || 'unknown';
+      var title = pos.title || pos.slug || pos.market || key;
+      var side = pos.outcome || (Number(pos.size) > 0 ? 'YES' : 'NO');
+      var size = Math.abs(Number(pos.size) || Number(pos.currentValue) || 0);
+      var avgPrice = Number(pos.avgPrice) || Number(pos.curPrice) || 0;
+      var curPrice = Number(pos.curPrice) || 0;
+      if (pos.eventSlug && key) slugCache[key] = pos.eventSlug;
+      if (!marketMap[key]) marketMap[key] = { title: title, sides: {}, curPrice: curPrice };
+      if (curPrice > 0) marketMap[key].curPrice = curPrice;
+      if (!marketMap[key].sides[side]) marketMap[key].sides[side] = [];
+      marketMap[key].sides[side].push({
+        wallet: trader.wallet, profit: trader.profit, size: size, avgPrice: avgPrice,
+        firstTrade: pos._firstTrade || null, lastTrade: pos._lastTrade || null
+      });
     }
-  }, 1000);
-}
-
-function updateCountdownDisplay() {
-  const el = document.getElementById('countdownText');
-  if (isRefreshing) {
-    el.textContent = 'Refreshing...';
-  } else {
-    el.textContent = 'Next refresh in ' + countdownSeconds + 's';
   }
-}
-
-// ===== Whale Tracker =====
-async function fetchJSON(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-  return res.json();
-}
-
-async function processBatch(items, batchSize, fn, onProgress) {
-  const results = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    const batchResults = await Promise.allSettled(batch.map(fn));
-    results.push(...batchResults);
-    if (onProgress) onProgress(Math.min(i + batchSize, items.length), items.length);
-  }
-  return results;
-}
-
-// ===== Smart Telegram Notifications =====
-const previousSignalKeys = new Set();
-let previousSignalMap = {};  // key -> signal data from last cycle
-let isFirstLoad = true;
-
-async function sendSmartAlerts(signals) {
-  const currentKeys = new Set();
-
-  for (const s of signals) {
-    const key = s.market + '|' + s.side;
-    currentKeys.add(key);
-
-    // Only alert if brand new (not in previous cycle)
-    if (!previousSignalKeys.has(key)) {
-      // Only alert if recent trade within 24 hours
-      const latestMs = s.latestEntryTimestamp ? Date.now() - new Date(s.latestEntryTimestamp).getTime() : Infinity;
-      if (latestMs < 86400000) {
-        const url = polymarketUrl(s.slug);
-        const msg = [
-          '🐋 <b>NEW WHALE SIGNAL</b>',
-          '',
-          `<b>Market:</b> ${s.market}`,
-          `<b>Whales:</b> ${s.whaleCount} of top 100 aligned`,
-          `<b>Side:</b> ${s.side}`,
-          `<b>Avg entry:</b> ${(s.avgEntry * 100).toFixed(1)}¢`,
-          `<b>Recent activity:</b> ${timeAgo(s.latestEntryTimestamp)}`,
-          s.highestEntryPrice ? `<b>Last whale entry:</b> ${timeAgo(s.latestEntryTimestamp)} at ${(s.highestEntryPrice * 100).toFixed(1)}¢` : '',
-          url ? `\n<b>Trade now:</b> ${url}` : '',
-        ].filter(Boolean).join('\n');
-
-        try {
-          await fetch('/api/send-signal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg }),
-          });
-        } catch {}
+  var signals = [];
+  for (var k in marketMap) {
+    var data = marketMap[k];
+    for (var side in data.sides) {
+      var whales = data.sides[side];
+      if (whales.length < MIN_WHALES) continue;
+      var sum = 0, maxPrice = 0, lasts = [], firsts = [];
+      for (var i = 0; i < whales.length; i++) {
+        sum += whales[i].avgPrice;
+        if (whales[i].avgPrice > maxPrice) maxPrice = whales[i].avgPrice;
+        if (whales[i].lastTrade) lasts.push(whales[i].lastTrade);
+        if (whales[i].firstTrade) firsts.push(whales[i].firstTrade);
       }
+      signals.push({
+        market: data.title, side: side, whaleCount: whales.length,
+        avgEntry: sum / whales.length, highestEntryPrice: maxPrice || null,
+        latestEntryTimestamp: lasts.length ? new Date(Math.max.apply(null, lasts)).toISOString() : null,
+        earliestEntryTimestamp: firsts.length ? new Date(Math.min.apply(null, firsts)).toISOString() : null,
+        currentPrice: data.curPrice || sum / whales.length,
+        whales: whales, slug: slugCache[k] || null
+      });
     }
   }
-
-  // Send closing alerts for signals that disappeared (skip on first load)
-  if (!isFirstLoad) {
-    for (const key of previousSignalKeys) {
-      if (!currentKeys.has(key)) {
-        const marketName = key.split('|')[0];
-        const msg = `🐋 <b>Signal closed:</b> ${marketName} - whales have exited`;
-        try {
-          await fetch('/api/send-signal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg }),
-          });
-        } catch {}
-      }
-    }
-  }
-
-  // Update previous state
-  previousSignalKeys.clear();
-  for (const key of currentKeys) previousSignalKeys.add(key);
-  isFirstLoad = false;
+  signals.sort(function(a, b) { return b.whaleCount - a.whaleCount; });
+  return signals;
 }
 
-// ===== Main load function =====
-let lastSignals = [];  // persisted for recommended tab
-
-async function loadWhaleData() {
-  if (isRefreshing) return;
-  isRefreshing = true;
-  updateCountdownDisplay();
-
-  const btn = document.getElementById('refreshWhales');
-  btn.disabled = true;
-  document.getElementById('whaleError').innerHTML = '';
-
-  try {
-    setProgress(5, 'Fetching top 100 traders by profit...');
-    const traders = await fetchJSON('/api/polymarket-data/v1/leaderboard?category=OVERALL&timePeriod=ALL&orderBy=PNL&limit=50&offset=0');
-    const traders2 = await fetchJSON('/api/polymarket-data/v1/leaderboard?category=OVERALL&timePeriod=ALL&orderBy=PNL&limit=50&offset=50');
-    traders.push(...traders2);
-    setProgress(15, `Found ${traders.length} traders. Fetching positions...`);
-
-    document.getElementById('metricTraders').textContent = traders.length;
-
-    const positionResults = await processBatch(
-      traders, 10,
-      async (trader) => {
-        const wallet = trader.proxyWallet || trader.address || trader.wallet;
-        if (!wallet) return { trader, positions: [], activity: [] };
-        const [positions, activity] = await Promise.all([
-          fetchJSON(`/api/polymarket-data/positions?user=${wallet}&sizeThreshold=500&limit=10&sortBy=CURRENT&sortDirection=DESC`),
-          fetchJSON(`/api/polymarket-data/activity?user=${wallet}&limit=100`).catch(() => [])
-        ]);
-        // Build activity map: conditionId -> { firstTrade, lastTrade, entryPrice }
-        const activityMap = {};
-        for (const a of activity) {
-          if (a.type !== 'TRADE' || !a.conditionId) continue;
-          const ts = a.timestamp * 1000;  // unix seconds to ms
-          if (!activityMap[a.conditionId]) {
-            activityMap[a.conditionId] = { firstTrade: ts, lastTrade: ts, entryPrice: a.price || 0 };
-          } else {
-            if (ts < activityMap[a.conditionId].firstTrade) activityMap[a.conditionId].firstTrade = ts;
-            if (ts > activityMap[a.conditionId].lastTrade) {
-              activityMap[a.conditionId].lastTrade = ts;
-              activityMap[a.conditionId].entryPrice = a.price || activityMap[a.conditionId].entryPrice;
-            }
-          }
-        }
-        // Enrich positions with activity timestamps
-        for (const pos of positions) {
-          const act = activityMap[pos.conditionId];
-          if (act) {
-            pos._firstTrade = act.firstTrade;
-            pos._lastTrade = act.lastTrade;
-            pos._tradeEntryPrice = act.entryPrice;
-          }
-        }
-        return { trader: { ...trader, wallet, profit: Number(trader.pnl) || Number(trader.profit) || 0 }, positions };
-      },
-      (done, total) => {
-        const pct = 15 + (done / total) * 70;
-        setProgress(pct, `Fetching positions & trades... ${done}/${total} traders`);
-      }
-    );
-
-    setProgress(87, 'Analyzing signals...');
-
-    const whaleData = [];
-    let totalPositions = 0;
-
-    for (const result of positionResults) {
-      if (result.status === 'fulfilled' && result.value) {
-        const { trader, positions } = result.value;
-        totalPositions += positions.length;
-        whaleData.push({ trader, positions });
-      }
+/* === UI RENDER === */
+function renderSignals(signals) {
+  if (signals.length === 0) return;
+  $('signalSection').style.display = 'block';
+  $('signalCount').textContent = signals.length + ' signals';
+  $('signalList').innerHTML = signals.map(function(s, i) {
+    var fb = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
+    var dates = '';
+    if (s.earliestEntryTimestamp || s.latestEntryTimestamp) {
+      dates = '<span>' + (s.earliestEntryTimestamp ? 'First entry: <span class="value">' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : '');
+      if (s.earliestEntryTimestamp && s.latestEntryTimestamp) dates += ' · ';
+      dates += (s.latestEntryTimestamp ? 'Latest: <span class="value">' + formatDateShort(s.latestEntryTimestamp) + '</span>' : '') + '</span>';
     }
-
-    document.getElementById('metricPositions').textContent = totalPositions;
-
-    // Signal engine: find markets where 5+ whales agree
-    const marketMap = {};
-    for (const { trader, positions } of whaleData) {
-      for (const pos of positions) {
-        const key = pos.conditionId || pos.slug || pos.market || pos.title || 'unknown';
-        const title = pos.title || pos.slug || pos.market || key;
-        const side = pos.outcome || (Number(pos.size) > 0 ? 'YES' : 'NO');
-        const size = Math.abs(Number(pos.size) || Number(pos.currentValue) || 0);
-        const avgPrice = Number(pos.avgPrice) || Number(pos.curPrice) || 0;
-        const curPrice = Number(pos.curPrice) || 0;
-        const firstTrade = pos._firstTrade || null;
-        const lastTrade = pos._lastTrade || null;
-        const tradeEntryPrice = pos._tradeEntryPrice || 0;
-
-        // Cache eventSlug from position data
-        if (pos.eventSlug && key) slugCache[key] = pos.eventSlug;
-
-        if (!marketMap[key]) marketMap[key] = { title, sides: {}, curPrice };
-        if (curPrice > 0) marketMap[key].curPrice = curPrice;
-        if (!marketMap[key].sides[side]) marketMap[key].sides[side] = [];
-        marketMap[key].sides[side].push({
-          wallet: trader.wallet || trader.proxyWallet || trader.address,
-          profit: trader.profit || Number(trader.pnl) || 0,
-          size,
-          avgPrice,
-          firstTrade,
-          lastTrade,
-          tradeEntryPrice
-        });
-      }
-    }
-
-    const signals = [];
-    for (const [key, data] of Object.entries(marketMap)) {
-      for (const [side, whales] of Object.entries(data.sides)) {
-        if (whales.length >= 5) {
-          const avgEntry = whales.reduce((s, w) => s + w.avgPrice, 0) / whales.length;
-
-          // Highest entry tracking
-          const pricesValid = whales.filter(w => w.avgPrice > 0);
-          const highestEntryPrice = pricesValid.length > 0 ? Math.max(...pricesValid.map(w => w.avgPrice)) : null;
-
-          // Entry timestamps from activity data
-          const lastTrades = whales.map(w => w.lastTrade).filter(Boolean);
-          const firstTrades = whales.map(w => w.firstTrade).filter(Boolean);
-          const latestEntryTimestamp = lastTrades.length > 0 ? new Date(Math.max(...lastTrades)).toISOString() : null;
-          const earliestEntryTimestamp = firstTrades.length > 0 ? new Date(Math.min(...firstTrades)).toISOString() : null;
-
-          // Current price from live data
-          const currentPrice = data.curPrice || avgEntry;
-
-          signals.push({
-            market: data.title,
-            side,
-            whaleCount: whales.length,
-            avgEntry,
-            highestEntryPrice,
-            latestEntryTimestamp,
-            earliestEntryTimestamp,
-            currentPrice,
-            whales,
-            slug: slugCache[key] || null
-          });
-        }
-      }
-    }
-
-    signals.sort((a, b) => b.whaleCount - a.whaleCount);
-
-    // Send smart Telegram alerts
-    setProgress(95, 'Sending alerts...');
-    await sendSmartAlerts(signals);
-
-    // Store signals for recommended tab
-    lastSignals = signals;
-
-    document.getElementById('metricSignals').textContent = signals.length;
-    if (signals.length > 0) {
-      document.getElementById('metricStrongest').textContent = signals[0].whaleCount + ' whales';
-      document.getElementById('metricStrongestName').textContent = signals[0].market.slice(0, 50);
-    } else {
-      document.getElementById('metricStrongest').textContent = 'None';
-      document.getElementById('metricStrongestName').textContent = '';
-    }
-
-    // Render signals
-    if (signals.length > 0) {
-      document.getElementById('signalSection').style.display = 'block';
-      document.getElementById('signalCount').textContent = signals.length + ' signals';
-      document.getElementById('signalList').innerHTML = signals.map((s, i) => {
-        const freshness = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
-        return `
-        <div class="signal-card">
-          <div class="signal-rank ${i < 3 ? 'top' : 'normal'}">${i + 1}</div>
-          <div class="signal-info">
-            <h3>${escapeHtml(s.market)}</h3>
-            <div class="signal-meta">
-              <span><span class="value">${s.whaleCount}</span> whales aligned</span>
-              <span>Avg entry: <span class="value">${(s.avgEntry * 100).toFixed(1)}¢</span></span>
-              ${s.highestEntryPrice ? `<span>Highest entry: <span class="value">${(s.highestEntryPrice * 100).toFixed(1)}¢</span></span>` : ''}
-              ${s.earliestEntryTimestamp || s.latestEntryTimestamp ? `<span>${s.earliestEntryTimestamp ? 'First entry: <span class="value">' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : ''}${s.earliestEntryTimestamp && s.latestEntryTimestamp ? ' · ' : ''}${s.latestEntryTimestamp ? 'Latest: <span class="value">' + formatDateShort(s.latestEntryTimestamp) + '</span>' : ''}</span>` : ''}
-            </div>
-            ${freshness ? `<div style="margin-top:6px">${freshness}</div>` : ''}
-          </div>
-          <div class="signal-right">
-            <div class="signal-side ${s.side.toLowerCase()}">${s.side}</div>
-            ${tradeButton(s.slug, false)}
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    // Render whale cards (top 20)
-    const topWhales = whaleData
-      .sort((a, b) => (b.trader.profit || 0) - (a.trader.profit || 0))
-      .slice(0, 20);
-
-    if (topWhales.length > 0) {
-      document.getElementById('whaleSection').style.display = 'block';
-      document.getElementById('whaleCount').textContent = topWhales.length + ' whales';
-      document.getElementById('whaleGrid').innerHTML = topWhales.map((w, i) => {
-        const profit = w.trader.profit || 0;
-        const wallet = w.trader.wallet || w.trader.proxyWallet || w.trader.address || '';
-        return `
-          <div class="whale-card">
-            <div class="whale-header">
-              <div>
-                <div class="whale-wallet">${w.trader.userName ? escapeHtml(w.trader.userName) + ' &middot; ' : ''}${shortWallet(wallet)}</div>
-                <div class="whale-profit ${profit >= 0 ? 'positive' : 'negative'}">${formatMoney(profit)}</div>
-              </div>
-              <div class="whale-rank-badge">#${i + 1}</div>
-            </div>
-            <div class="whale-positions">
-              <div class="whale-positions-title">Open Positions (${w.positions.length})</div>
-              ${w.positions.length === 0 ? '<div style="font-size:12px;color:var(--text-muted)">No large positions</div>' :
-                w.positions.map(p => {
-                  const side = p.outcome || (Number(p.size) > 0 ? 'YES' : 'NO');
-                  const title = p.title || p.slug || p.market || 'Unknown Market';
-                  const size = Math.abs(Number(p.size) || Number(p.currentValue) || 0);
-                  const tid = p.conditionId || p.slug;
-                  const posSlug = (tid && slugCache[tid]) ? slugCache[tid] : p.eventSlug || null;
-                  const entryPrice = Number(p.avgPrice) || 0;
-                  const curPrice = Number(p.curPrice) || 0;
-                  const openedAt = p._firstTrade ? formatDate(p._firstTrade) : '';
-                  const pnlPct = entryPrice > 0 && curPrice > 0 ? ((curPrice - entryPrice) / entryPrice * 100) : 0;
-                  const pnlClass = pnlPct >= 0 ? 'positive' : 'negative';
-                  const pnlSign = pnlPct >= 0 ? '+' : '';
-                  return `
-                    <div class="position-item">
-                      <div class="position-info-col">
-                        <span class="position-market" title="${escapeHtml(title)}">${escapeHtml(title)}</span>
-                        <span class="position-details">${openedAt ? openedAt : ''}${openedAt && entryPrice ? ' · ' : ''}${entryPrice ? 'Entry: ' + (entryPrice * 100).toFixed(1) + '¢' : ''}${curPrice ? ' → Now: ' + (curPrice * 100).toFixed(1) + '¢' : ''}${entryPrice && curPrice ? ' <span class="pnl-' + pnlClass + '">(' + pnlSign + pnlPct.toFixed(1) + '%)</span>' : ''}</span>
-                      </div>
-                      <span class="position-side ${side.toLowerCase()}">${side}</span>
-                      <span class="position-size">${formatMoney(size)}</span>
-                      ${tradeLinkSmall(posSlug)}
-                    </div>`;
-                }).join('')
-              }
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    // Update recommended positions tab
-    renderRecommendedPositions(signals);
-
-    setProgress(100, 'Complete!');
-    setTimeout(hideProgress, 1500);
-    const now = new Date();
-    document.getElementById('lastUpdated').textContent = 'Updated: ' + now.toLocaleTimeString();
-    document.getElementById('lastUpdatedRow').textContent = 'Last updated at ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
-
-  } catch (err) {
-    document.getElementById('whaleError').innerHTML = `<div class="error-msg">Error: ${escapeHtml(err.message)}</div>`;
-    hideProgress();
-  } finally {
-    btn.disabled = false;
-    isRefreshing = false;
-    startCountdown();
-  }
-}
-
-// ===== Recommended Positions Tab =====
-function renderRecommendedPositions(signals) {
-  const now = Date.now();
-
-  // Filter: only signals with whale activity in last 48 hours
-  const recent = signals.filter(s => {
-    if (!s.latestEntryTimestamp) return true;  // include if no timestamp data (can't filter)
-    return (now - new Date(s.latestEntryTimestamp).getTime()) < 48 * 3600000;
-  });
-
-  // Sort by conviction (whaleCount) descending, take top 10
-  const top = recent.sort((a, b) => b.whaleCount - a.whaleCount).slice(0, 10);
-
-  const el = document.getElementById('recGrid');
-  document.getElementById('recCount').textContent = top.length + ' pick' + (top.length === 1 ? '' : 's');
-
-  if (top.length === 0) {
-    el.innerHTML = '<div class="empty-state"><h3>No recommendations</h3><p>No whale consensus signals with recent activity found.</p></div>';
-    return;
-  }
-
-  el.innerHTML = top.map(s => {
-    const freshness = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
-    return `
-    <div class="rec-card">
-      <div class="rec-card-header">
-        <div class="rec-card-title">${escapeHtml(s.market)}</div>
-        <div class="signal-side ${s.side.toLowerCase()}" style="font-size:12px;padding:4px 12px;">${s.side}</div>
-      </div>
-      <div class="rec-stats">
-        <div class="rec-stat">
-          <span class="label">Conviction</span>
-          <span class="val">${s.whaleCount}/100 whales</span>
-        </div>
-        <div class="rec-stat">
-          <span class="label">Current Price</span>
-          <span class="val">${(s.avgEntry * 100).toFixed(1)}¢</span>
-        </div>
-        <div class="rec-stat">
-          <span class="label">Last Whale Trade</span>
-          <span class="val">${s.latestEntryTimestamp ? timeAgo(s.latestEntryTimestamp) : 'Unknown'}</span>
-        </div>
-        <div class="rec-stat">
-          <span class="label">Highest Entry</span>
-          <span class="val">${s.highestEntryPrice ? (s.highestEntryPrice * 100).toFixed(1) + '¢' : '--'}</span>
-        </div>
-      </div>
-      <div class="rec-entry-info">
-        ${s.earliestEntryTimestamp ? `<span>First entry: ${formatDateShort(s.earliestEntryTimestamp)}</span>` : ''}
-        ${s.latestEntryTimestamp ? `<span>Latest: ${formatDateShort(s.latestEntryTimestamp)} (${timeAgo(s.latestEntryTimestamp)})</span>` : ''}
-        ${freshness}
-      </div>
-      ${tradeButton(s.slug, true)}
-    </div>`;
+    return '<div class="signal-card"><div class="signal-rank ' + (i < 3 ? 'top' : 'normal') + '">' + (i + 1) + '</div><div class="signal-info"><h3>' + escapeHtml(s.market) + '</h3><div class="signal-meta">' +
+      '<span><span class="value">' + s.whaleCount + '</span> whales aligned</span>' +
+      '<span>Avg entry: <span class="value">' + cents(s.avgEntry) + '</span></span>' +
+      (s.highestEntryPrice ? '<span>Highest entry: <span class="value">' + cents(s.highestEntryPrice) + '</span></span>' : '') +
+      dates + '</div>' + (fb ? '<div style="margin-top:6px">' + fb + '</div>' : '') +
+      '</div><div class="signal-right"><div class="signal-side ' + s.side.toLowerCase() + '">' + s.side + '</div>' + tradeBtn(s.slug, false) + '</div></div>';
   }).join('');
 }
 
-// ===== Odds Analyzer =====
-const apiKeyInput = document.getElementById('oddsApiKey');
-const savedKey = localStorage.getItem('oddsApiKey');
-if (savedKey) apiKeyInput.value = savedKey;
-apiKeyInput.addEventListener('input', () => {
-  localStorage.setItem('oddsApiKey', apiKeyInput.value.trim());
-});
+function renderWhales(whaleData) {
+  var top = whaleData.sort(function(a, b) { return (b.trader.profit || 0) - (a.trader.profit || 0); }).slice(0, 20);
+  if (top.length === 0) return;
+  $('whaleSection').style.display = 'block';
+  $('whaleCount').textContent = top.length + ' whales';
+  $('whaleGrid').innerHTML = top.map(function(w, i) {
+    var profit = w.trader.profit || 0;
+    var wallet = w.trader.wallet || '';
+    var posHtml = '';
+    if (w.positions.length === 0) {
+      posHtml = '<div style="font-size:12px;color:var(--t3)">No large positions</div>';
+    } else {
+      posHtml = w.positions.map(function(p) {
+        var side = p.outcome || (Number(p.size) > 0 ? 'YES' : 'NO');
+        var title = p.title || p.slug || p.market || 'Unknown';
+        var size = Math.abs(Number(p.size) || Number(p.currentValue) || 0);
+        var tid = p.conditionId || p.slug;
+        var pSlug = (tid && slugCache[tid]) ? slugCache[tid] : p.eventSlug || null;
+        var entry = Number(p.avgPrice) || 0;
+        var cur = Number(p.curPrice) || 0;
+        var opened = p._firstTrade ? formatDate(p._firstTrade) : '';
+        var pnl = (entry > 0 && cur > 0) ? ((cur - entry) / entry * 100) : 0;
+        var pnlCls = pnl >= 0 ? 'positive' : 'negative';
+        var details = (opened ? opened : '') + (opened && entry ? ' · ' : '') +
+          (entry ? 'Entry: ' + cents(entry) : '') + (cur ? ' → Now: ' + cents(cur) : '') +
+          (entry && cur ? ' <span class="pnl-' + pnlCls + '">(' + (pnl >= 0 ? '+' : '') + pnl.toFixed(1) + '%)</span>' : '');
+        return '<div class="position-item"><div class="position-info-col"><span class="position-market" title="' + escapeHtml(title) + '">' + escapeHtml(title) + '</span><span class="position-details">' + details + '</span></div><span class="position-side ' + side.toLowerCase() + '">' + side + '</span><span class="position-size">' + formatMoney(size) + '</span>' + tradeLink(pSlug) + '</div>';
+      }).join('');
+    }
+    return '<div class="whale-card"><div class="whale-header"><div><div class="whale-wallet">' + (w.trader.userName ? escapeHtml(w.trader.userName) + ' &middot; ' : '') + shortWallet(wallet) + '</div><div class="whale-profit ' + (profit >= 0 ? 'positive' : 'negative') + '">' + formatMoney(profit) + '</div></div><div class="whale-rank-badge">#' + (i + 1) + '</div></div><div class="whale-positions"><div class="whale-positions-title">Open Positions (' + w.positions.length + ')</div>' + posHtml + '</div></div>';
+  }).join('');
+}
 
-const SPORT_MAP = {
-  basketball_nba: 'basketball_nba',
-  americanfootball_nfl: 'americanfootball_nfl',
-  baseball_mlb: 'baseball_mlb',
-  icehockey_nhl: 'icehockey_nhl'
-};
+function renderRecommended(signals) {
+  var now = Date.now();
+  var recent = signals.filter(function(s) {
+    if (!s.latestEntryTimestamp) return true;
+    return (now - new Date(s.latestEntryTimestamp).getTime()) < 48 * 3600000;
+  });
+  var top = recent.sort(function(a, b) { return b.whaleCount - a.whaleCount; }).slice(0, 10);
+  $('recCount').textContent = top.length + ' pick' + (top.length === 1 ? '' : 's');
+  if (top.length === 0) {
+    $('recGrid').innerHTML = '<div class="empty-state"><h3>No recommendations</h3><p>No signals with recent activity.</p></div>';
+    return;
+  }
+  $('recGrid').innerHTML = top.map(function(s) {
+    var fb = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
+    return '<div class="rec-card"><div class="rec-card-header"><div class="rec-card-title">' + escapeHtml(s.market) + '</div><div class="signal-side ' + s.side.toLowerCase() + '" style="font-size:12px;padding:4px 12px">' + s.side + '</div></div><div class="rec-stats">' +
+      '<div class="rec-stat"><span class="label">Conviction</span><span class="val">' + s.whaleCount + '/100 whales</span></div>' +
+      '<div class="rec-stat"><span class="label">Current Price</span><span class="val">' + cents(s.avgEntry) + '</span></div>' +
+      '<div class="rec-stat"><span class="label">Last Whale Trade</span><span class="val">' + (s.latestEntryTimestamp ? timeAgo(s.latestEntryTimestamp) : 'Unknown') + '</span></div>' +
+      '<div class="rec-stat"><span class="label">Highest Entry</span><span class="val">' + (s.highestEntryPrice ? cents(s.highestEntryPrice) : '--') + '</span></div></div>' +
+      '<div class="rec-entry-info">' + (s.earliestEntryTimestamp ? '<span>First entry: ' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : '') +
+      (s.latestEntryTimestamp ? '<span>Latest: ' + formatDateShort(s.latestEntryTimestamp) + ' (' + timeAgo(s.latestEntryTimestamp) + ')</span>' : '') +
+      fb + '</div>' + tradeBtn(s.slug, true) + '</div>';
+  }).join('');
+}
+
+/* === TELEGRAM === */
+function sendSmartAlerts(signals) {
+  var currentKeys = new Set();
+  var promises = [];
+  for (var i = 0; i < signals.length; i++) {
+    var s = signals[i];
+    var key = s.market + '|' + s.side;
+    currentKeys.add(key);
+    if (!previousSignalKeys.has(key)) {
+      var age = s.latestEntryTimestamp ? Date.now() - new Date(s.latestEntryTimestamp).getTime() : Infinity;
+      if (age < 86400000) {
+        var url = polymarketUrl(s.slug);
+        var msg = '🐋 <b>NEW WHALE SIGNAL</b>\n\n<b>Market:</b> ' + s.market +
+          '\n<b>Whales:</b> ' + s.whaleCount + ' of top 100 aligned\n<b>Side:</b> ' + s.side +
+          '\n<b>Avg entry:</b> ' + cents(s.avgEntry) + '\n<b>Recent activity:</b> ' + timeAgo(s.latestEntryTimestamp) +
+          (s.highestEntryPrice ? '\n<b>Last whale entry:</b> ' + timeAgo(s.latestEntryTimestamp) + ' at ' + cents(s.highestEntryPrice) : '') +
+          (url ? '\n\n<b>Trade now:</b> ' + url : '');
+        promises.push(postJSON('/api/send-signal', { message: msg }).catch(function() {}));
+      }
+    }
+  }
+  if (!isFirstLoad) {
+    previousSignalKeys.forEach(function(key) {
+      if (!currentKeys.has(key)) {
+        var name = key.split('|')[0];
+        promises.push(postJSON('/api/send-signal', { message: '🐋 <b>Signal closed:</b> ' + name + ' - whales have exited' }).catch(function() {}));
+      }
+    });
+  }
+  previousSignalKeys = currentKeys;
+  isFirstLoad = false;
+  return Promise.all(promises);
+}
+
+function saveTelegramConfig() {
+  var token = $('telegramBotToken').value.trim();
+  var chatId = $('telegramChatId').value.trim();
+  var el = $('telegramStatus');
+  if (!token || !chatId) { el.className = 'telegram-status-err'; el.textContent = 'Both fields required.'; return; }
+  postJSON('/api/setup-telegram', { botToken: token, chatId: chatId }).then(function(d) {
+    el.className = d.ok ? 'telegram-status-ok' : 'telegram-status-err';
+    el.textContent = d.ok ? 'Saved.' : (d.error || 'Failed.');
+    if (d.ok) updateTelegramBadge(true);
+  }).catch(function(e) { el.className = 'telegram-status-err'; el.textContent = e.message; });
+}
+
+function testTelegram() {
+  var el = $('telegramStatus');
+  el.className = ''; el.textContent = 'Sending...';
+  fetch('/api/test-telegram', { method: 'POST' }).then(function(r) { return r.json(); }).then(function(d) {
+    el.className = d.ok ? 'telegram-status-ok' : 'telegram-status-err';
+    el.textContent = d.ok ? 'Sent! Check Telegram.' : (d.error || 'Failed.');
+  }).catch(function(e) { el.className = 'telegram-status-err'; el.textContent = e.message; });
+}
+
+function updateTelegramBadge(ok) {
+  var b = $('telegramBadge');
+  b.style.display = 'inline';
+  b.className = ok ? 'section-badge badge-green' : 'section-badge';
+  b.textContent = ok ? 'Connected' : 'Not configured';
+  if (!ok) { b.style.background = 'var(--yellow-bg)'; b.style.color = 'var(--yellow)'; }
+}
+
+/* === REFRESH === */
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownSec = REFRESH_SEC;
+  updateCountdown();
+  countdownTimer = setInterval(function() {
+    countdownSec--;
+    updateCountdown();
+    if (countdownSec <= 0) { clearInterval(countdownTimer); if (!isRefreshing) loadWhaleData(); }
+  }, 1000);
+}
+
+function updateCountdown() {
+  $('countdownText').textContent = isRefreshing ? 'Refreshing...' : 'Next refresh in ' + countdownSec + 's';
+}
+
+/* === MAIN LOADER === */
+function loadWhaleData() {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  updateCountdown();
+  var btn = $('refreshWhales');
+  btn.disabled = true;
+  $('whaleError').innerHTML = '';
+
+  setProgress(5, 'Fetching top 100 traders...');
+  Promise.all([
+    fetchJSON('/api/polymarket-data/v1/leaderboard?category=OVERALL&timePeriod=ALL&orderBy=PNL&limit=50&offset=0'),
+    fetchJSON('/api/polymarket-data/v1/leaderboard?category=OVERALL&timePeriod=ALL&orderBy=PNL&limit=50&offset=50')
+  ]).then(function(res) {
+    var traders = res[0].concat(res[1]);
+    setProgress(15, 'Found ' + traders.length + ' traders...');
+    $('metricTraders').textContent = traders.length;
+
+    return processBatch(traders, function(trader) {
+      var wallet = trader.proxyWallet || trader.address || trader.wallet;
+      if (!wallet) return Promise.resolve({ trader: trader, positions: [] });
+      return Promise.all([
+        fetchJSON('/api/polymarket-data/positions?user=' + wallet + '&sizeThreshold=500&limit=10&sortBy=CURRENT&sortDirection=DESC'),
+        fetchJSON('/api/polymarket-data/activity?user=' + wallet + '&limit=100').catch(function() { return []; })
+      ]).then(function(r) {
+        var positions = r[0], activity = r[1];
+        var actMap = {};
+        for (var j = 0; j < activity.length; j++) {
+          var a = activity[j];
+          if (a.type !== 'TRADE' || !a.conditionId) continue;
+          var ts = a.timestamp * 1000;
+          if (!actMap[a.conditionId]) { actMap[a.conditionId] = { first: ts, last: ts, price: a.price || 0 }; }
+          else {
+            if (ts < actMap[a.conditionId].first) actMap[a.conditionId].first = ts;
+            if (ts > actMap[a.conditionId].last) { actMap[a.conditionId].last = ts; actMap[a.conditionId].price = a.price || actMap[a.conditionId].price; }
+          }
+        }
+        for (var k = 0; k < positions.length; k++) {
+          var act = actMap[positions[k].conditionId];
+          if (act) { positions[k]._firstTrade = act.first; positions[k]._lastTrade = act.last; }
+        }
+        return { trader: { proxyWallet: trader.proxyWallet, address: trader.address, userName: trader.userName, wallet: wallet, profit: Number(trader.pnl) || Number(trader.profit) || 0 }, positions: positions };
+      });
+    }, function(done, total) { setProgress(15 + (done / total) * 70, 'Fetching positions & trades... ' + done + '/' + total); });
+  }).then(function(results) {
+    setProgress(87, 'Analyzing signals...');
+    var whaleData = [];
+    var totalPos = 0;
+    for (var i = 0; i < results.length; i++) {
+      if (results[i].status === 'fulfilled' && results[i].value) {
+        totalPos += results[i].value.positions.length;
+        whaleData.push(results[i].value);
+      }
+    }
+    $('metricPositions').textContent = totalPos;
+    var signals = buildSignals(whaleData);
+
+    setProgress(95, 'Sending alerts...');
+    return sendSmartAlerts(signals).then(function() {
+      lastSignals = signals;
+      $('metricSignals').textContent = signals.length;
+      if (signals.length > 0) {
+        $('metricStrongest').textContent = signals[0].whaleCount + ' whales';
+        $('metricStrongestName').textContent = signals[0].market.slice(0, 50);
+      } else {
+        $('metricStrongest').textContent = 'None';
+        $('metricStrongestName').textContent = '';
+      }
+      renderSignals(signals);
+      renderWhales(whaleData);
+      renderRecommended(signals);
+      setProgress(100, 'Complete!');
+      setTimeout(function() { $('progressContainer').classList.remove('visible'); }, 1500);
+      var now = new Date();
+      $('lastUpdated').textContent = 'Updated: ' + now.toLocaleTimeString();
+      $('lastUpdatedRow').textContent = 'Last updated at ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
+    });
+  }).catch(function(err) {
+    $('whaleError').innerHTML = '<div class="error-msg">Error: ' + escapeHtml(err.message) + '</div>';
+    $('progressContainer').classList.remove('visible');
+  }).finally(function() {
+    btn.disabled = false;
+    isRefreshing = false;
+    startCountdown();
+  });
+}
+
+/* === ODDS === */
+var apiKeyInput = $('oddsApiKey');
+var savedKey = localStorage.getItem('oddsApiKey');
+if (savedKey) apiKeyInput.value = savedKey;
+apiKeyInput.addEventListener('input', function() { localStorage.setItem('oddsApiKey', apiKeyInput.value.trim()); });
 
 function americanToImplied(odds) {
   odds = Number(odds);
-  if (odds > 0) return (100 / (odds + 100) * 100).toFixed(1);
-  return (Math.abs(odds) / (Math.abs(odds) + 100) * 100).toFixed(1);
+  return odds > 0 ? (100 / (odds + 100) * 100).toFixed(1) : (Math.abs(odds) / (Math.abs(odds) + 100) * 100).toFixed(1);
 }
 
-function formatOdds(odds) {
-  odds = Number(odds);
-  return odds > 0 ? '+' + odds : '' + odds;
-}
-
-async function loadOdds() {
-  const key = apiKeyInput.value.trim();
-  if (!key) {
-    document.getElementById('oddsError').innerHTML = '<div class="error-msg">Please enter your Odds API key.</div>';
-    return;
-  }
-  document.getElementById('oddsError').innerHTML = '';
-
-  const sport = document.getElementById('sportSelect').value;
-  const content = document.getElementById('oddsContent');
+function loadOdds() {
+  var key = apiKeyInput.value.trim();
+  if (!key) { $('oddsError').innerHTML = '<div class="error-msg">Please enter your Odds API key.</div>'; return; }
+  $('oddsError').innerHTML = '';
+  var content = $('oddsContent');
   content.innerHTML = '<div class="empty-state"><p>Loading odds...</p></div>';
-
-  try {
-    const url = `/api/odds/sports/${sport}/odds/?apiKey=${key}&regions=us&markets=h2h&oddsFormat=american`;
-    const data = await fetchJSON(url);
-
-    if (!data || data.length === 0) {
-      content.innerHTML = '<div class="empty-state"><h3>No games found</h3><p>There may be no upcoming games for this sport right now.</p></div>';
-      return;
-    }
-
-    content.innerHTML = data.map(game => {
-      const teams = [game.home_team, game.away_team];
-      const bookmakers = game.bookmakers || [];
-      const time = new Date(game.commence_time).toLocaleString();
-
-      const bestOdds = {};
-      teams.forEach(team => { bestOdds[team] = -Infinity; });
-
-      bookmakers.forEach(bk => {
-        const market = (bk.markets || []).find(m => m.key === 'h2h');
-        if (!market) return;
-        market.outcomes.forEach(o => {
-          if (bestOdds[o.name] !== undefined && o.price > bestOdds[o.name]) {
-            bestOdds[o.name] = o.price;
-          }
-        });
-      });
-
-      const rows = bookmakers.map(bk => {
-        const market = (bk.markets || []).find(m => m.key === 'h2h');
-        if (!market) return '';
-        const oddsMap = {};
-        market.outcomes.forEach(o => { oddsMap[o.name] = o.price; });
-
-        return `<tr>
-          <td>${escapeHtml(bk.title)}</td>
-          ${teams.map(team => {
-            const price = oddsMap[team];
-            if (price == null) return '<td>--</td>';
-            const isBest = price === bestOdds[team] && bestOdds[team] > -Infinity;
-            return `<td>
-              <span class="odds-cell${isBest ? ' best' : ''}">${formatOdds(price)}</span>
-              <span class="implied-prob">${americanToImplied(price)}%</span>
-            </td>`;
-          }).join('')}
-        </tr>`;
+  fetchJSON('/api/odds/sports/' + $('sportSelect').value + '/odds/?apiKey=' + key + '&regions=us&markets=h2h&oddsFormat=american').then(function(data) {
+    if (!data || !data.length) { content.innerHTML = '<div class="empty-state"><h3>No games found</h3></div>'; return; }
+    content.innerHTML = data.map(function(game) {
+      var teams = [game.home_team, game.away_team];
+      var bks = game.bookmakers || [];
+      var best = {};
+      teams.forEach(function(t) { best[t] = -Infinity; });
+      bks.forEach(function(bk) { var m = (bk.markets || []).find(function(x) { return x.key === 'h2h'; }); if (m) m.outcomes.forEach(function(o) { if (best[o.name] !== undefined && o.price > best[o.name]) best[o.name] = o.price; }); });
+      var rows = bks.map(function(bk) {
+        var m = (bk.markets || []).find(function(x) { return x.key === 'h2h'; }); if (!m) return '';
+        var om = {}; m.outcomes.forEach(function(o) { om[o.name] = o.price; });
+        return '<tr><td>' + escapeHtml(bk.title) + '</td>' + teams.map(function(t) {
+          var p = om[t]; if (p == null) return '<td>--</td>';
+          var isBest = p === best[t] && best[t] > -Infinity;
+          var fmt = p > 0 ? '+' + p : '' + p;
+          return '<td><span class="odds-cell' + (isBest ? ' best' : '') + '">' + fmt + '</span> <span class="implied-prob">' + americanToImplied(p) + '%</span></td>';
+        }).join('') + '</tr>';
       }).join('');
-
-      return `
-        <div class="game-card">
-          <div class="game-header">
-            <div class="game-matchup">${escapeHtml(game.away_team)} @ ${escapeHtml(game.home_team)}</div>
-            <div class="game-time">${time}</div>
-          </div>
-          <table class="odds-table">
-            <thead><tr><th>Bookmaker</th>${teams.map(t => `<th>${escapeHtml(t)}</th>`).join('')}</tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
+      return '<div class="game-card"><div class="game-header"><div class="game-matchup">' + escapeHtml(game.away_team) + ' @ ' + escapeHtml(game.home_team) + '</div><div class="game-time">' + new Date(game.commence_time).toLocaleString() + '</div></div><table class="odds-table"><thead><tr><th>Bookmaker</th>' + teams.map(function(t) { return '<th>' + escapeHtml(t) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
     }).join('');
-
-  } catch (err) {
-    document.getElementById('oddsError').innerHTML = `<div class="error-msg">Error: ${escapeHtml(err.message)}</div>`;
-    content.innerHTML = '';
-  }
+  }).catch(function(err) { $('oddsError').innerHTML = '<div class="error-msg">Error: ' + escapeHtml(err.message) + '</div>'; content.innerHTML = ''; });
 }
 
-// ===== Telegram Integration =====
-async function saveTelegramConfig() {
-  const botToken = document.getElementById('telegramBotToken').value.trim();
-  const chatId = document.getElementById('telegramChatId').value.trim();
-  const status = document.getElementById('telegramStatus');
-  if (!botToken || !chatId) {
-    status.className = 'telegram-status-err';
-    status.textContent = 'Both fields are required.';
-    return;
-  }
-  try {
-    const res = await fetch('/api/setup-telegram', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ botToken, chatId }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      status.className = 'telegram-status-ok';
-      status.textContent = 'Config saved successfully.';
-      updateTelegramBadge(true);
-    } else {
-      status.className = 'telegram-status-err';
-      status.textContent = data.error || 'Failed to save.';
-    }
-  } catch (err) {
-    status.className = 'telegram-status-err';
-    status.textContent = 'Error: ' + err.message;
-  }
-}
+/* === INIT === */
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    $('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
 
-async function testTelegram() {
-  const status = document.getElementById('telegramStatus');
-  status.className = '';
-  status.textContent = 'Sending test message...';
-  try {
-    const res = await fetch('/api/test-telegram', { method: 'POST' });
-    const data = await res.json();
-    if (data.ok) {
-      status.className = 'telegram-status-ok';
-      status.textContent = 'Test message sent! Check your Telegram.';
-    } else {
-      status.className = 'telegram-status-err';
-      status.textContent = data.error || 'Failed to send.';
-    }
-  } catch (err) {
-    status.className = 'telegram-status-err';
-    status.textContent = 'Error: ' + err.message;
-  }
-}
+fetch('/api/get-telegram').then(function(r) { return r.json(); }).then(function(d) {
+  if (d.configured) { $('telegramChatId').value = d.chatId; $('telegramBotToken').placeholder = 'Token saved (enter new to change)'; }
+  updateTelegramBadge(d.configured);
+}).catch(function() {});
 
-function updateTelegramBadge(configured) {
-  const badge = document.getElementById('telegramBadge');
-  badge.style.display = 'inline';
-  if (configured) {
-    badge.className = 'section-badge badge-green';
-    badge.textContent = 'Connected';
-  } else {
-    badge.className = 'section-badge';
-    badge.style.background = 'var(--yellow-bg)';
-    badge.style.color = 'var(--yellow)';
-    badge.textContent = 'Not configured';
-  }
-}
-
-// Load existing Telegram config on startup
-(async function loadTelegramStatus() {
-  try {
-    const res = await fetch('/api/get-telegram');
-    const data = await res.json();
-    if (data.configured) {
-      document.getElementById('telegramChatId').value = data.chatId;
-      document.getElementById('telegramBotToken').placeholder = 'Token saved (enter new to change)';
-    }
-    updateTelegramBadge(data.configured);
-  } catch {}
-})();
-
-// Auto-load whale data on page load
 loadWhaleData();
 </script>
 </body>
