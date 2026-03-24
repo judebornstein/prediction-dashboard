@@ -3,7 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const CONFIG_PATH = path.join(__dirname, 'telegram-config.json');
 
 const MIME_TYPES = {
@@ -38,6 +38,7 @@ function sendTelegramMessage(text) {
       chat_id: config.chatId,
       text,
       parse_mode: 'HTML',
+      disable_web_page_preview: true,
     });
     const req = https.request({
       hostname: 'api.telegram.org',
@@ -139,18 +140,8 @@ const server = http.createServer(async (req, res) => {
 
   if (parsed.pathname === '/api/send-signal' && req.method === 'POST') {
     try {
-      const { market, whaleCount, side, avgEntry } = await readBody(req);
-      const text = [
-        '🐋 <b>WHALE SIGNAL DETECTED</b>',
-        '',
-        `<b>Market:</b> ${market}`,
-        `<b>Whales aligned:</b> ${whaleCount}`,
-        `<b>Side:</b> ${side}`,
-        `<b>Avg entry:</b> ${avgEntry}`,
-        '',
-        `<a href="http://localhost:3000">View dashboard</a>`,
-      ].join('\n');
-      await sendTelegramMessage(text);
+      const { message } = await readBody(req);
+      await sendTelegramMessage(message);
       return jsonResponse(res, 200, { ok: true });
     } catch (err) {
       return jsonResponse(res, 500, { error: err.message });
@@ -168,6 +159,12 @@ const server = http.createServer(async (req, res) => {
   if (parsed.pathname.startsWith('/api/polymarket-data/')) {
     const apiPath = parsed.pathname.replace('/api/polymarket-data/', '/');
     const target = `https://data-api.polymarket.com${apiPath}${parsed.search || ''}`;
+    return proxyRequest(target, res);
+  }
+
+  // Gamma API proxy for market slugs
+  if (parsed.pathname === '/api/gamma-markets') {
+    const target = `https://gamma-api.polymarket.com/markets${parsed.search || ''}`;
     return proxyRequest(target, res);
   }
 

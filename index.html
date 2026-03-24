@@ -104,7 +104,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
 .metric-card {
@@ -139,6 +139,13 @@ body {
 .metric-value.blue { color: var(--accent); }
 .metric-value.purple { color: var(--purple); }
 .metric-value.yellow { color: var(--yellow); }
+
+.last-updated-row {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  padding-left: 4px;
+}
 
 /* Progress Bar */
 .progress-container {
@@ -195,6 +202,59 @@ body {
 
 .btn-primary:hover { background: var(--accent-hover); }
 
+.btn-trade {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-trade:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-trade-lg {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.btn-trade-lg:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* Countdown */
+.countdown-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.refresh-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 /* Section Headers */
 .section-header {
   display: flex;
@@ -231,7 +291,7 @@ body {
   border-radius: 12px;
   padding: 16px 20px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   gap: 16px;
   align-items: center;
   transition: border-color 0.2s;
@@ -273,6 +333,12 @@ body {
 
 .signal-meta .value { color: var(--text-primary); font-weight: 600; }
 
+.signal-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .signal-side {
   padding: 6px 16px;
   border-radius: 8px;
@@ -284,6 +350,21 @@ body {
 
 .signal-side.yes { background: var(--green-bg); color: var(--green); }
 .signal-side.no { background: var(--red-bg); color: var(--red); }
+
+/* Freshness badges */
+.freshness-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.freshness-badge.active { background: var(--green-bg); color: var(--green); }
+.freshness-badge.stale { background: var(--yellow-bg); color: var(--yellow); }
+.freshness-badge.old { background: var(--red-bg); color: var(--red); }
 
 /* Whale Cards */
 .whale-grid {
@@ -352,21 +433,40 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 8px 0;
   font-size: 12px;
 }
+
+.position-info-col {
+  flex: 1;
+  min-width: 0;
+  margin-right: 12px;
+}
+
+.position-info-col .position-market {
+  display: block;
+  margin-right: 0;
+}
+
+.position-details {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.pnl-positive { color: var(--green); font-weight: 600; }
+.pnl-negative { color: var(--red); font-weight: 600; }
 
 .position-item + .position-item {
   border-top: 1px solid rgba(42, 53, 80, 0.5);
 }
 
 .position-market {
-  flex: 1;
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 12px;
 }
 
 .position-side {
@@ -385,6 +485,76 @@ body {
   font-weight: 600;
   font-family: 'SF Mono', 'Fira Code', monospace;
   white-space: nowrap;
+}
+
+.position-trade-link {
+  color: var(--purple);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.position-trade-link:hover { text-decoration: underline; }
+
+/* Recommended Positions Tab */
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.rec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.rec-card:hover { border-color: var(--purple); }
+
+.rec-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.rec-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.rec-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.rec-stat {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rec-stat .label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 2px; }
+.rec-stat .val { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+
+.rec-entry-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 /* Tab 2 - Odds */
@@ -550,9 +720,10 @@ body {
 @media (max-width: 768px) {
   .app-header, .tab-bar, .tab-content { padding-left: 16px; padding-right: 16px; }
   .whale-grid { grid-template-columns: 1fr; }
+  .rec-grid { grid-template-columns: 1fr; }
   .metrics-row { grid-template-columns: repeat(2, 1fr); }
   .signal-card { grid-template-columns: auto 1fr; }
-  .signal-side { grid-column: 2; justify-self: start; }
+  .signal-right { grid-column: 2; justify-self: start; }
 }
 </style>
 </head>
@@ -573,6 +744,7 @@ body {
 
 <nav class="tab-bar">
   <button class="tab-btn active" data-tab="whales">Polymarket Whale Tracker</button>
+  <button class="tab-btn" data-tab="recommended">Recommended Positions</button>
   <button class="tab-btn" data-tab="odds">Odds Analyzer</button>
 </nav>
 
@@ -598,6 +770,8 @@ body {
     </div>
   </div>
 
+  <div class="last-updated-row" id="lastUpdatedRow"></div>
+
   <div class="progress-container" id="progressContainer">
     <div class="progress-text" id="progressText">Loading traders...</div>
     <div class="progress-bar-track">
@@ -605,11 +779,12 @@ body {
     </div>
   </div>
 
-  <div style="margin-bottom: 24px;">
+  <div class="refresh-row">
     <button class="btn btn-primary" id="refreshWhales" onclick="loadWhaleData()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
       Refresh Data
     </button>
+    <span class="countdown-text" id="countdownText"></span>
   </div>
 
   <div id="whaleError"></div>
@@ -658,7 +833,24 @@ body {
   </div>
 </div>
 
-<!-- TAB 2: Odds Analyzer -->
+<!-- TAB 2: Recommended Positions -->
+<div class="tab-content" id="tab-recommended">
+  <div class="section-header">
+    <div class="section-title">Top Whale Conviction Picks</div>
+    <span class="section-badge badge-purple" id="recCount">0 picks</span>
+  </div>
+  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">
+    Markets where multiple top-100 whales are aligned. Ranked by conviction score. Only showing markets with whale activity in the last 48 hours.
+  </p>
+  <div class="rec-grid" id="recGrid">
+    <div class="empty-state">
+      <h3>No recommendations yet</h3>
+      <p>Load whale data from the Whale Tracker tab to see recommended positions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: Odds Analyzer -->
 <div class="tab-content" id="tab-odds">
   <div class="odds-controls">
     <div class="input-group">
@@ -730,6 +922,121 @@ function hideProgress() {
   document.getElementById('progressContainer').classList.remove('visible');
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function timeAgo(timestamp) {
+  if (!timestamp) return 'Unknown';
+  const now = Date.now();
+  const diff = now - new Date(timestamp).getTime();
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  if (hours < 1) return 'Less than 1 hour ago';
+  if (hours < 24) return hours + ' hour' + (hours === 1 ? '' : 's') + ' ago';
+  return days + ' day' + (days === 1 ? '' : 's') + ' ago';
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) return '';
+  const d = new Date(timestamp);
+  if (isNaN(d.getTime())) return '';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const month = months[d.getMonth()];
+  const day = d.getDate();
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  const mins = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  return `${month} ${day}, ${year} at ${hours}:${mins} ${ampm}`;
+}
+
+function formatDateShort(timestamp) {
+  if (!timestamp) return '';
+  const d = new Date(timestamp);
+  if (isNaN(d.getTime())) return '';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+function getFreshnessBadge(latestEntryTimestamp, highestEntryPrice, currentPrice) {
+  const now = Date.now();
+  const entryTime = new Date(latestEntryTimestamp).getTime();
+  const hoursAgo = (now - entryTime) / 3600000;
+  const daysAgo = hoursAgo / 24;
+
+  let timeBadge = '';
+  if (daysAgo > 7) {
+    timeBadge = '<span class="freshness-badge old">Old signal</span>';
+  } else if (hoursAgo > 48) {
+    timeBadge = '<span class="freshness-badge stale">Going stale</span>';
+  }
+
+  let priceBadge = '';
+  if (highestEntryPrice && currentPrice && Math.abs(highestEntryPrice - currentPrice) <= 5) {
+    priceBadge = '<span class="freshness-badge active">Still active</span>';
+  }
+
+  return (priceBadge + ' ' + timeBadge).trim();
+}
+
+// ===== Market slug cache =====
+// Maps conditionId/market key -> eventSlug (from position data directly)
+const slugCache = {};
+
+function polymarketUrl(slug) {
+  if (!slug) return null;
+  return 'https://polymarket.com/event/' + slug;
+}
+
+function tradeButton(slug, large) {
+  const url = polymarketUrl(slug);
+  if (!url) return '';
+  if (large) {
+    return `<a class="btn-trade-lg" href="${url}" target="_blank" rel="noopener">Trade on Polymarket &rarr;</a>`;
+  }
+  return `<a class="btn-trade" href="${url}" target="_blank" rel="noopener">Trade &rarr;</a>`;
+}
+
+function tradeLinkSmall(slug) {
+  const url = polymarketUrl(slug);
+  if (!url) return '';
+  return `<a class="position-trade-link" href="${url}" target="_blank" rel="noopener">Trade</a>`;
+}
+
+// ===== Auto-refresh countdown =====
+const REFRESH_INTERVAL = 30;
+let countdownSeconds = REFRESH_INTERVAL;
+let countdownTimer = null;
+let isRefreshing = false;
+
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownSeconds = REFRESH_INTERVAL;
+  updateCountdownDisplay();
+  countdownTimer = setInterval(() => {
+    countdownSeconds--;
+    updateCountdownDisplay();
+    if (countdownSeconds <= 0) {
+      clearInterval(countdownTimer);
+      if (!isRefreshing) loadWhaleData();
+    }
+  }, 1000);
+}
+
+function updateCountdownDisplay() {
+  const el = document.getElementById('countdownText');
+  if (isRefreshing) {
+    el.textContent = 'Refreshing...';
+  } else {
+    el.textContent = 'Next refresh in ' + countdownSeconds + 's';
+  }
+}
+
 // ===== Whale Tracker =====
 async function fetchJSON(url) {
   const res = await fetch(url);
@@ -748,12 +1055,81 @@ async function processBatch(items, batchSize, fn, onProgress) {
   return results;
 }
 
+// ===== Smart Telegram Notifications =====
+const previousSignalKeys = new Set();
+let previousSignalMap = {};  // key -> signal data from last cycle
+let isFirstLoad = true;
+
+async function sendSmartAlerts(signals) {
+  const currentKeys = new Set();
+
+  for (const s of signals) {
+    const key = s.market + '|' + s.side;
+    currentKeys.add(key);
+
+    // Only alert if brand new (not in previous cycle)
+    if (!previousSignalKeys.has(key)) {
+      // Only alert if recent trade within 24 hours
+      const latestMs = s.latestEntryTimestamp ? Date.now() - new Date(s.latestEntryTimestamp).getTime() : Infinity;
+      if (latestMs < 86400000) {
+        const url = polymarketUrl(s.slug);
+        const msg = [
+          '🐋 <b>NEW WHALE SIGNAL</b>',
+          '',
+          `<b>Market:</b> ${s.market}`,
+          `<b>Whales:</b> ${s.whaleCount} of top 100 aligned`,
+          `<b>Side:</b> ${s.side}`,
+          `<b>Avg entry:</b> ${(s.avgEntry * 100).toFixed(1)}¢`,
+          `<b>Recent activity:</b> ${timeAgo(s.latestEntryTimestamp)}`,
+          s.highestEntryPrice ? `<b>Last whale entry:</b> ${timeAgo(s.latestEntryTimestamp)} at ${(s.highestEntryPrice * 100).toFixed(1)}¢` : '',
+          url ? `\n<b>Trade now:</b> ${url}` : '',
+        ].filter(Boolean).join('\n');
+
+        try {
+          await fetch('/api/send-signal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg }),
+          });
+        } catch {}
+      }
+    }
+  }
+
+  // Send closing alerts for signals that disappeared (skip on first load)
+  if (!isFirstLoad) {
+    for (const key of previousSignalKeys) {
+      if (!currentKeys.has(key)) {
+        const marketName = key.split('|')[0];
+        const msg = `🐋 <b>Signal closed:</b> ${marketName} - whales have exited`;
+        try {
+          await fetch('/api/send-signal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg }),
+          });
+        } catch {}
+      }
+    }
+  }
+
+  // Update previous state
+  previousSignalKeys.clear();
+  for (const key of currentKeys) previousSignalKeys.add(key);
+  isFirstLoad = false;
+}
+
+// ===== Main load function =====
+let lastSignals = [];  // persisted for recommended tab
+
 async function loadWhaleData() {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  updateCountdownDisplay();
+
   const btn = document.getElementById('refreshWhales');
   btn.disabled = true;
   document.getElementById('whaleError').innerHTML = '';
-  document.getElementById('signalSection').style.display = 'none';
-  document.getElementById('whaleSection').style.display = 'none';
 
   try {
     setProgress(5, 'Fetching top 100 traders by profit...');
@@ -768,19 +1144,44 @@ async function loadWhaleData() {
       traders, 10,
       async (trader) => {
         const wallet = trader.proxyWallet || trader.address || trader.wallet;
-        if (!wallet) return { trader, positions: [] };
-        const positions = await fetchJSON(
-          `/api/polymarket-data/positions?user=${wallet}&sizeThreshold=500&limit=10&sortBy=CURRENT&sortDirection=DESC`
-        );
+        if (!wallet) return { trader, positions: [], activity: [] };
+        const [positions, activity] = await Promise.all([
+          fetchJSON(`/api/polymarket-data/positions?user=${wallet}&sizeThreshold=500&limit=10&sortBy=CURRENT&sortDirection=DESC`),
+          fetchJSON(`/api/polymarket-data/activity?user=${wallet}&limit=100`).catch(() => [])
+        ]);
+        // Build activity map: conditionId -> { firstTrade, lastTrade, entryPrice }
+        const activityMap = {};
+        for (const a of activity) {
+          if (a.type !== 'TRADE' || !a.conditionId) continue;
+          const ts = a.timestamp * 1000;  // unix seconds to ms
+          if (!activityMap[a.conditionId]) {
+            activityMap[a.conditionId] = { firstTrade: ts, lastTrade: ts, entryPrice: a.price || 0 };
+          } else {
+            if (ts < activityMap[a.conditionId].firstTrade) activityMap[a.conditionId].firstTrade = ts;
+            if (ts > activityMap[a.conditionId].lastTrade) {
+              activityMap[a.conditionId].lastTrade = ts;
+              activityMap[a.conditionId].entryPrice = a.price || activityMap[a.conditionId].entryPrice;
+            }
+          }
+        }
+        // Enrich positions with activity timestamps
+        for (const pos of positions) {
+          const act = activityMap[pos.conditionId];
+          if (act) {
+            pos._firstTrade = act.firstTrade;
+            pos._lastTrade = act.lastTrade;
+            pos._tradeEntryPrice = act.entryPrice;
+          }
+        }
         return { trader: { ...trader, wallet, profit: Number(trader.pnl) || Number(trader.profit) || 0 }, positions };
       },
       (done, total) => {
-        const pct = 15 + (done / total) * 75;
-        setProgress(pct, `Fetching positions... ${done}/${total} traders`);
+        const pct = 15 + (done / total) * 70;
+        setProgress(pct, `Fetching positions & trades... ${done}/${total} traders`);
       }
     );
 
-    setProgress(92, 'Analyzing signals...');
+    setProgress(87, 'Analyzing signals...');
 
     const whaleData = [];
     let totalPositions = 0;
@@ -804,13 +1205,25 @@ async function loadWhaleData() {
         const side = pos.outcome || (Number(pos.size) > 0 ? 'YES' : 'NO');
         const size = Math.abs(Number(pos.size) || Number(pos.currentValue) || 0);
         const avgPrice = Number(pos.avgPrice) || Number(pos.curPrice) || 0;
-        if (!marketMap[key]) marketMap[key] = { title, sides: {} };
+        const curPrice = Number(pos.curPrice) || 0;
+        const firstTrade = pos._firstTrade || null;
+        const lastTrade = pos._lastTrade || null;
+        const tradeEntryPrice = pos._tradeEntryPrice || 0;
+
+        // Cache eventSlug from position data
+        if (pos.eventSlug && key) slugCache[key] = pos.eventSlug;
+
+        if (!marketMap[key]) marketMap[key] = { title, sides: {}, curPrice };
+        if (curPrice > 0) marketMap[key].curPrice = curPrice;
         if (!marketMap[key].sides[side]) marketMap[key].sides[side] = [];
         marketMap[key].sides[side].push({
           wallet: trader.wallet || trader.proxyWallet || trader.address,
           profit: trader.profit || Number(trader.pnl) || 0,
           size,
-          avgPrice
+          avgPrice,
+          firstTrade,
+          lastTrade,
+          tradeEntryPrice
         });
       }
     }
@@ -820,12 +1233,31 @@ async function loadWhaleData() {
       for (const [side, whales] of Object.entries(data.sides)) {
         if (whales.length >= 5) {
           const avgEntry = whales.reduce((s, w) => s + w.avgPrice, 0) / whales.length;
+
+          // Highest entry tracking
+          const pricesValid = whales.filter(w => w.avgPrice > 0);
+          const highestEntryPrice = pricesValid.length > 0 ? Math.max(...pricesValid.map(w => w.avgPrice)) : null;
+
+          // Entry timestamps from activity data
+          const lastTrades = whales.map(w => w.lastTrade).filter(Boolean);
+          const firstTrades = whales.map(w => w.firstTrade).filter(Boolean);
+          const latestEntryTimestamp = lastTrades.length > 0 ? new Date(Math.max(...lastTrades)).toISOString() : null;
+          const earliestEntryTimestamp = firstTrades.length > 0 ? new Date(Math.min(...firstTrades)).toISOString() : null;
+
+          // Current price from live data
+          const currentPrice = data.curPrice || avgEntry;
+
           signals.push({
             market: data.title,
             side,
             whaleCount: whales.length,
             avgEntry,
-            whales
+            highestEntryPrice,
+            latestEntryTimestamp,
+            earliestEntryTimestamp,
+            currentPrice,
+            whales,
+            slug: slugCache[key] || null
           });
         }
       }
@@ -833,8 +1265,12 @@ async function loadWhaleData() {
 
     signals.sort((a, b) => b.whaleCount - a.whaleCount);
 
-    // Send new signals to Telegram
-    sendNewSignalAlerts(signals);
+    // Send smart Telegram alerts
+    setProgress(95, 'Sending alerts...');
+    await sendSmartAlerts(signals);
+
+    // Store signals for recommended tab
+    lastSignals = signals;
 
     document.getElementById('metricSignals').textContent = signals.length;
     if (signals.length > 0) {
@@ -849,19 +1285,27 @@ async function loadWhaleData() {
     if (signals.length > 0) {
       document.getElementById('signalSection').style.display = 'block';
       document.getElementById('signalCount').textContent = signals.length + ' signals';
-      document.getElementById('signalList').innerHTML = signals.map((s, i) => `
+      document.getElementById('signalList').innerHTML = signals.map((s, i) => {
+        const freshness = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
+        return `
         <div class="signal-card">
           <div class="signal-rank ${i < 3 ? 'top' : 'normal'}">${i + 1}</div>
           <div class="signal-info">
             <h3>${escapeHtml(s.market)}</h3>
             <div class="signal-meta">
               <span><span class="value">${s.whaleCount}</span> whales aligned</span>
-              <span>Avg entry: <span class="value">${(s.avgEntry * 100).toFixed(1)}%</span></span>
+              <span>Avg entry: <span class="value">${(s.avgEntry * 100).toFixed(1)}¢</span></span>
+              ${s.highestEntryPrice ? `<span>Highest entry: <span class="value">${(s.highestEntryPrice * 100).toFixed(1)}¢</span></span>` : ''}
+              ${s.earliestEntryTimestamp || s.latestEntryTimestamp ? `<span>${s.earliestEntryTimestamp ? 'First entry: <span class="value">' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : ''}${s.earliestEntryTimestamp && s.latestEntryTimestamp ? ' · ' : ''}${s.latestEntryTimestamp ? 'Latest: <span class="value">' + formatDateShort(s.latestEntryTimestamp) + '</span>' : ''}</span>` : ''}
             </div>
+            ${freshness ? `<div style="margin-top:6px">${freshness}</div>` : ''}
           </div>
-          <div class="signal-side ${s.side.toLowerCase()}">${s.side}</div>
-        </div>
-      `).join('');
+          <div class="signal-right">
+            <div class="signal-side ${s.side.toLowerCase()}">${s.side}</div>
+            ${tradeButton(s.slug, false)}
+          </div>
+        </div>`;
+      }).join('');
     }
 
     // Render whale cards (top 20)
@@ -891,11 +1335,23 @@ async function loadWhaleData() {
                   const side = p.outcome || (Number(p.size) > 0 ? 'YES' : 'NO');
                   const title = p.title || p.slug || p.market || 'Unknown Market';
                   const size = Math.abs(Number(p.size) || Number(p.currentValue) || 0);
+                  const tid = p.conditionId || p.slug;
+                  const posSlug = (tid && slugCache[tid]) ? slugCache[tid] : p.eventSlug || null;
+                  const entryPrice = Number(p.avgPrice) || 0;
+                  const curPrice = Number(p.curPrice) || 0;
+                  const openedAt = p._firstTrade ? formatDate(p._firstTrade) : '';
+                  const pnlPct = entryPrice > 0 && curPrice > 0 ? ((curPrice - entryPrice) / entryPrice * 100) : 0;
+                  const pnlClass = pnlPct >= 0 ? 'positive' : 'negative';
+                  const pnlSign = pnlPct >= 0 ? '+' : '';
                   return `
                     <div class="position-item">
-                      <span class="position-market" title="${escapeHtml(title)}">${escapeHtml(title)}</span>
+                      <div class="position-info-col">
+                        <span class="position-market" title="${escapeHtml(title)}">${escapeHtml(title)}</span>
+                        <span class="position-details">${openedAt ? openedAt : ''}${openedAt && entryPrice ? ' · ' : ''}${entryPrice ? 'Entry: ' + (entryPrice * 100).toFixed(1) + '¢' : ''}${curPrice ? ' → Now: ' + (curPrice * 100).toFixed(1) + '¢' : ''}${entryPrice && curPrice ? ' <span class="pnl-' + pnlClass + '">(' + pnlSign + pnlPct.toFixed(1) + '%)</span>' : ''}</span>
+                      </div>
                       <span class="position-side ${side.toLowerCase()}">${side}</span>
                       <span class="position-size">${formatMoney(size)}</span>
+                      ${tradeLinkSmall(posSlug)}
                     </div>`;
                 }).join('')
               }
@@ -904,23 +1360,80 @@ async function loadWhaleData() {
       }).join('');
     }
 
+    // Update recommended positions tab
+    renderRecommendedPositions(signals);
+
     setProgress(100, 'Complete!');
     setTimeout(hideProgress, 1500);
-    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent = 'Updated: ' + now.toLocaleTimeString();
+    document.getElementById('lastUpdatedRow').textContent = 'Last updated at ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
 
   } catch (err) {
     document.getElementById('whaleError').innerHTML = `<div class="error-msg">Error: ${escapeHtml(err.message)}</div>`;
     hideProgress();
   } finally {
     btn.disabled = false;
+    isRefreshing = false;
+    startCountdown();
   }
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+// ===== Recommended Positions Tab =====
+function renderRecommendedPositions(signals) {
+  const now = Date.now();
+
+  // Filter: only signals with whale activity in last 48 hours
+  const recent = signals.filter(s => {
+    if (!s.latestEntryTimestamp) return true;  // include if no timestamp data (can't filter)
+    return (now - new Date(s.latestEntryTimestamp).getTime()) < 48 * 3600000;
+  });
+
+  // Sort by conviction (whaleCount) descending, take top 10
+  const top = recent.sort((a, b) => b.whaleCount - a.whaleCount).slice(0, 10);
+
+  const el = document.getElementById('recGrid');
+  document.getElementById('recCount').textContent = top.length + ' pick' + (top.length === 1 ? '' : 's');
+
+  if (top.length === 0) {
+    el.innerHTML = '<div class="empty-state"><h3>No recommendations</h3><p>No whale consensus signals with recent activity found.</p></div>';
+    return;
+  }
+
+  el.innerHTML = top.map(s => {
+    const freshness = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
+    return `
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div class="rec-card-title">${escapeHtml(s.market)}</div>
+        <div class="signal-side ${s.side.toLowerCase()}" style="font-size:12px;padding:4px 12px;">${s.side}</div>
+      </div>
+      <div class="rec-stats">
+        <div class="rec-stat">
+          <span class="label">Conviction</span>
+          <span class="val">${s.whaleCount}/100 whales</span>
+        </div>
+        <div class="rec-stat">
+          <span class="label">Current Price</span>
+          <span class="val">${(s.avgEntry * 100).toFixed(1)}¢</span>
+        </div>
+        <div class="rec-stat">
+          <span class="label">Last Whale Trade</span>
+          <span class="val">${s.latestEntryTimestamp ? timeAgo(s.latestEntryTimestamp) : 'Unknown'}</span>
+        </div>
+        <div class="rec-stat">
+          <span class="label">Highest Entry</span>
+          <span class="val">${s.highestEntryPrice ? (s.highestEntryPrice * 100).toFixed(1) + '¢' : '--'}</span>
+        </div>
+      </div>
+      <div class="rec-entry-info">
+        ${s.earliestEntryTimestamp ? `<span>First entry: ${formatDateShort(s.earliestEntryTimestamp)}</span>` : ''}
+        ${s.latestEntryTimestamp ? `<span>Latest: ${formatDateShort(s.latestEntryTimestamp)} (${timeAgo(s.latestEntryTimestamp)})</span>` : ''}
+        ${freshness}
+      </div>
+      ${tradeButton(s.slug, true)}
+    </div>`;
+  }).join('');
 }
 
 // ===== Odds Analyzer =====
@@ -975,7 +1488,6 @@ async function loadOdds() {
       const bookmakers = game.bookmakers || [];
       const time = new Date(game.commence_time).toLocaleString();
 
-      // Find best odds for each team
       const bestOdds = {};
       teams.forEach(team => { bestOdds[team] = -Infinity; });
 
@@ -1029,28 +1541,6 @@ async function loadOdds() {
 }
 
 // ===== Telegram Integration =====
-const previousSignalKeys = new Set();
-
-async function sendNewSignalAlerts(signals) {
-  for (const s of signals) {
-    const key = s.market + '|' + s.side;
-    if (previousSignalKeys.has(key)) continue;
-    previousSignalKeys.add(key);
-    try {
-      await fetch('/api/send-signal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          market: s.market,
-          whaleCount: s.whaleCount,
-          side: s.side,
-          avgEntry: (s.avgEntry * 100).toFixed(1) + '%',
-        }),
-      });
-    } catch {}
-  }
-}
-
 async function saveTelegramConfig() {
   const botToken = document.getElementById('telegramBotToken').value.trim();
   const chatId = document.getElementById('telegramChatId').value.trim();
