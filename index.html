@@ -8,140 +8,135 @@
 /* === STYLES === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg0: #0a0e17; --bg1: #111827; --bg2: #1a2235; --bg2h: #1f2a40; --brd: #2a3550;
-  --t1: #e2e8f0; --t2: #94a3b8; --t3: #64748b;
-  --blue: #3b82f6; --blue-h: #2563eb; --green: #10b981; --red: #ef4444; --yellow: #f59e0b; --purple: #8b5cf6;
-  --green-bg: rgba(16,185,129,.12); --red-bg: rgba(239,68,68,.12); --yellow-bg: rgba(245,158,11,.12); --purple-bg: rgba(139,92,246,.12);
+  --bg: #F5F5F0; --card: #FAFAF8; --brd: #DCDCDC; --hover: #EEE9F5;
+  --t1: #0A1628; --t2: #4A5568; --t3: #8895A7;
+  --accent: #3D2E6B; --accent-light: #EEE9F5;
+  --green: #1A7A4A; --red: #CC2200; --yellow: #B8860B;
+  --green-bg: rgba(26,122,74,.08); --red-bg: rgba(204,34,0,.08); --yellow-bg: rgba(184,134,11,.08); --accent-bg: rgba(61,46,107,.06);
 }
-body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg0); color: var(--t1); min-height: 100vh; line-height: 1.5; }
-.mono { font-family: 'SF Mono','Fira Code',monospace; }
-.app-header { background: var(--bg1); border-bottom: 1px solid var(--brd); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
-.app-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.app-title span { background: linear-gradient(135deg,var(--blue),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.last-updated, .last-updated-row, .countdown-text { font-size: 12px; color: var(--t3); }
-.last-updated-row { margin-bottom: 24px; padding-left: 4px; }
+body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; line-height: 1.5; font-size: 13px; }
+.app-header { background: #fff; border-bottom: 2px solid var(--accent); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+.app-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -.3px; }
+.app-title span { color: var(--accent); }
+.last-updated, .last-updated-row, .countdown-text { font-size: 11px; color: var(--t3); }
+.last-updated-row { margin-bottom: 16px; }
 .countdown-text { font-variant-numeric: tabular-nums; }
-.tab-bar { display: flex; background: var(--bg1); border-bottom: 1px solid var(--brd); padding: 0 32px; }
-.tab-btn { padding: 12px 24px; background: none; border: none; color: var(--t2); font-size: 14px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
-.tab-btn:hover { color: var(--t1); }
-.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
-.tab-content { display: none; padding: 24px 32px; }
+.tab-bar { display: flex; background: #fff; border-bottom: 1px solid var(--brd); padding: 0 32px; }
+.tab-btn { padding: 10px 20px; background: none; border: none; color: var(--t3); font-size: 12px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; text-transform: uppercase; letter-spacing: .5px; }
+.tab-btn:hover { color: var(--t1); background: var(--hover); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; padding: 20px 32px; }
 .tab-content.active { display: block; }
-.metrics-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px; margin-bottom: 8px; }
-.metric-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; }
-.metric-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 8px; }
-.metric-value { font-size: 28px; font-weight: 700; }
-.metric-sub { font-size: 12px; color: var(--t2); margin-top: 4px; }
-.metric-value.green { color: var(--green); } .metric-value.blue { color: var(--blue); }
-.metric-value.purple { color: var(--purple); } .metric-value.yellow { color: var(--yellow); }
-.progress-container { margin-bottom: 24px; display: none; }
+.metrics-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; margin-bottom: 4px; background: var(--brd); border: 1px solid var(--brd); }
+.metric-card { background: #fff; padding: 14px 18px; }
+.metric-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); margin-bottom: 4px; }
+.metric-value { font-size: 26px; font-weight: 800; color: var(--accent); letter-spacing: -.5px; }
+.metric-sub { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.progress-container { margin-bottom: 16px; display: none; }
 .progress-container.visible { display: block; }
-.progress-bar-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-.progress-bar-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--purple)); border-radius: 3px; transition: width .3s; width: 0%; }
-.progress-text { font-size: 13px; color: var(--t2); }
-.btn { padding: 8px 20px; border-radius: 8px; border: 1px solid var(--brd); background: var(--bg2); color: var(--t1); font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
-.btn:hover { background: var(--bg2h); border-color: var(--blue); }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-primary { background: var(--blue); border-color: var(--blue); }
-.btn-primary:hover { background: var(--blue-h); }
-.btn-trade, .btn-trade-lg { background: linear-gradient(135deg,#6366f1,#8b5cf6); border: none; color: white; cursor: pointer; text-decoration: none; transition: all .2s; }
-.btn-trade { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-.btn-trade-lg { padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 12px; }
-.btn-trade:hover, .btn-trade-lg:hover { opacity: .9; transform: translateY(-1px); }
-.refresh-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.section-title { font-size: 16px; font-weight: 600; }
-.section-badge { font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
-.badge-green { background: var(--green-bg); color: var(--green); }
-.badge-purple { background: var(--purple-bg); color: var(--purple); }
-.card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; transition: border-color .2s; }
-.card:hover { border-color: var(--blue); }
-.signal-list { display: grid; gap: 12px; margin-bottom: 32px; }
-.signal-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 16px; align-items: center; transition: border-color .2s; }
-.signal-card:hover { border-color: var(--blue); }
-.signal-rank { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
-.signal-rank.top { background: linear-gradient(135deg,var(--blue),var(--purple)); }
-.signal-rank.normal { background: var(--bg1); color: var(--t2); }
-.signal-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
-.signal-meta { display: flex; gap: 16px; flex-wrap: wrap; }
-.signal-meta span { font-size: 12px; color: var(--t2); }
-.signal-meta .value { color: var(--t1); font-weight: 600; }
-.signal-right { display: flex; align-items: center; gap: 12px; }
-.signal-side { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center; min-width: 80px; }
-.signal-side.yes { background: var(--green-bg); color: var(--green); }
-.signal-side.no { background: var(--red-bg); color: var(--red); }
-.freshness-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; }
-.freshness-badge.active { background: var(--green-bg); color: var(--green); }
-.freshness-badge.stale { background: var(--yellow-bg); color: var(--yellow); }
-.freshness-badge.old { background: var(--red-bg); color: var(--red); }
-.whale-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(380px,1fr)); gap: 16px; }
-.whale-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; transition: border-color .2s; }
-.whale-card:hover { border-color: var(--blue); }
-.whale-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.whale-rank-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg1); color: var(--t3); }
-.whale-wallet { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
-.whale-wallet, .position-size { font-family: 'SF Mono','Fira Code',monospace; }
-.whale-profit { font-size: 20px; font-weight: 700; }
-.whale-profit.positive, .pnl-positive { color: var(--green); font-weight: 600; }
-.whale-profit.negative, .pnl-negative { color: var(--red); font-weight: 600; }
-.whale-positions { margin-top: 12px; border-top: 1px solid var(--brd); padding-top: 12px; }
-.whale-positions-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 8px; }
-.position-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 12px; }
-.position-item + .position-item { border-top: 1px solid rgba(42,53,80,.5); }
-.position-info-col { flex: 1; min-width: 0; margin-right: 12px; }
+.progress-bar-track { height: 3px; background: var(--brd); overflow: hidden; margin-top: 6px; }
+.progress-bar-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
+.progress-text { font-size: 11px; color: var(--t3); }
+.btn { padding: 6px 14px; border: 1px solid var(--accent); background: #fff; color: var(--accent); font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: .3px; }
+.btn:hover { background: var(--hover); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #2D1F55; }
+.btn-trade, .btn-trade-lg { background: var(--accent); border: 1px solid var(--accent); color: #fff; cursor: pointer; text-decoration: none; transition: all .15s; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.btn-trade { padding: 4px 10px; font-size: 10px; display: inline-flex; align-items: center; gap: 4px; }
+.btn-trade-lg { padding: 10px 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 12px; }
+.btn-trade:hover, .btn-trade-lg:hover { background: #2D1F55; }
+.refresh-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--t1); }
+.section-badge { font-size: 11px; padding: 2px 8px; font-weight: 700; border: 1px solid var(--brd); color: var(--t2); }
+.badge-green { border-color: var(--green); color: var(--green); }
+.badge-purple { border-color: var(--accent); color: var(--accent); }
+/* Signal table */
+.signal-table { width: 100%; border-collapse: collapse; border: 1px solid var(--brd); margin-bottom: 24px; background: #fff; }
+.signal-table th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); background: var(--card); border-bottom: 1px solid var(--brd); }
+.signal-table td { padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--brd); vertical-align: middle; }
+.signal-table tr:hover { background: var(--hover); }
+.signal-table tr:last-child td { border-bottom: none; }
+.signal-table .rank { font-weight: 800; color: var(--accent); font-size: 14px; text-align: center; width: 44px; }
+.signal-table .market { font-weight: 600; color: var(--t1); max-width: 280px; }
+.signal-table .num { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.signal-side { padding: 3px 10px; font-size: 11px; font-weight: 700; text-align: center; display: inline-block; border: 1px solid; }
+.signal-side.yes { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+.signal-side.no { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+.freshness-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; border: 1px solid; }
+.freshness-badge.active { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+.freshness-badge.stale { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-bg); }
+.freshness-badge.old { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+/* Whale cards */
+.whale-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(380px,1fr)); gap: 12px; }
+.whale-card { background: #fff; border: 1px solid var(--brd); padding: 16px; transition: border-color .15s; }
+.whale-card:hover { border-color: var(--accent); }
+.whale-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.whale-rank-badge { font-size: 10px; font-weight: 700; padding: 1px 6px; border: 1px solid var(--brd); color: var(--t3); }
+.whale-wallet { font-size: 12px; font-family: 'SF Mono','Fira Code',monospace; color: var(--t2); margin-bottom: 2px; }
+.whale-profit { font-size: 18px; font-weight: 800; }
+.whale-profit.positive, .pnl-positive { color: var(--green); font-weight: 700; }
+.whale-profit.negative, .pnl-negative { color: var(--red); font-weight: 700; }
+.whale-positions { margin-top: 10px; border-top: 1px solid var(--brd); padding-top: 10px; }
+.whale-positions-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); margin-bottom: 6px; }
+.position-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 12px; }
+.position-item + .position-item { border-top: 1px solid var(--brd); }
+.position-info-col { flex: 1; min-width: 0; margin-right: 10px; }
 .position-info-col .position-market { display: block; }
 .position-market { color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.position-details { display: block; font-size: 11px; color: var(--t3); margin-top: 2px; }
-.position-side { padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; margin-right: 8px; }
-.position-side.yes { background: var(--green-bg); color: var(--green); }
-.position-side.no { background: var(--red-bg); color: var(--red); }
-.position-size { color: var(--t1); font-weight: 600; white-space: nowrap; }
-.position-trade-link { color: var(--purple); font-size: 11px; font-weight: 600; text-decoration: none; margin-left: 8px; white-space: nowrap; }
+.position-details { display: block; font-size: 10px; color: var(--t3); margin-top: 1px; }
+.position-side { padding: 1px 6px; font-weight: 700; font-size: 10px; margin-right: 6px; border: 1px solid; }
+.position-side.yes { border-color: var(--green); color: var(--green); }
+.position-side.no { border-color: var(--red); color: var(--red); }
+.position-size { color: var(--t1); font-weight: 700; font-family: 'SF Mono','Fira Code',monospace; white-space: nowrap; font-size: 11px; }
+.position-trade-link { color: var(--accent); font-size: 10px; font-weight: 700; text-decoration: none; margin-left: 6px; text-transform: uppercase; letter-spacing: .3px; }
 .position-trade-link:hover { text-decoration: underline; }
-.rec-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(340px,1fr)); gap: 16px; }
-.rec-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; transition: border-color .2s; }
-.rec-card:hover { border-color: var(--purple); }
-.rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.rec-card-title { font-size: 15px; font-weight: 600; line-height: 1.3; flex: 1; margin-right: 12px; }
-.rec-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
-.rec-stat { font-size: 12px; color: var(--t2); }
-.rec-stat .label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); margin-bottom: 2px; }
-.rec-stat .val { font-size: 15px; font-weight: 700; color: var(--t1); }
-.rec-entry-info { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--brd); font-size: 12px; color: var(--t2); }
-.input-group { display: flex; flex-direction: column; gap: 4px; }
-.input-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); }
-.input-group input, .input-group select { padding: 8px 14px; background: var(--bg2); border: 1px solid var(--brd); border-radius: 8px; color: var(--t1); font-size: 14px; outline: none; transition: border-color .2s; }
-.input-group input:focus, .input-group select:focus { border-color: var(--blue); }
-.input-group input { min-width: 280px; }
-.input-group select { min-width: 160px; }
-.odds-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
-.game-card { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
-.game-header { padding: 16px 20px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
-.game-matchup { font-size: 16px; font-weight: 600; }
-.game-time { font-size: 12px; color: var(--t3); }
+/* Recommended */
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 12px; }
+.rec-card { background: #fff; border: 1px solid var(--brd); padding: 16px; transition: border-color .15s; }
+.rec-card:hover { border-color: var(--accent); }
+.rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.rec-card-title { font-size: 13px; font-weight: 600; line-height: 1.3; flex: 1; margin-right: 10px; }
+.rec-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.rec-stat { font-size: 11px; color: var(--t2); }
+.rec-stat .label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); margin-bottom: 1px; }
+.rec-stat .val { font-size: 14px; font-weight: 800; color: var(--accent); }
+.rec-entry-info { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--brd); font-size: 11px; color: var(--t3); }
+/* Odds / Forms */
+.input-group { display: flex; flex-direction: column; gap: 3px; }
+.input-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); }
+.input-group input, .input-group select { padding: 6px 10px; background: #fff; border: 1px solid var(--brd); color: var(--t1); font-size: 13px; outline: none; transition: border-color .15s; }
+.input-group input:focus, .input-group select:focus { border-color: var(--accent); }
+.input-group input { min-width: 240px; }
+.input-group select { min-width: 140px; }
+.odds-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.game-card { background: #fff; border: 1px solid var(--brd); margin-bottom: 12px; overflow: hidden; }
+.game-header { padding: 12px 16px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
+.game-matchup { font-size: 14px; font-weight: 600; }
+.game-time { font-size: 11px; color: var(--t3); }
 .odds-table { width: 100%; border-collapse: collapse; }
-.odds-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--t3); background: rgba(17,24,39,.5); border-bottom: 1px solid var(--brd); }
-.odds-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid rgba(42,53,80,.3); }
+.odds-table th { padding: 8px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); background: var(--card); border-bottom: 1px solid var(--brd); }
+.odds-table td { padding: 8px 14px; font-size: 12px; border-bottom: 1px solid var(--brd); }
 .odds-table tr:last-child td { border-bottom: none; }
 .odds-table td:first-child { font-weight: 500; color: var(--t2); }
-.odds-cell { font-family: 'SF Mono','Fira Code',monospace; font-weight: 600; }
-.odds-cell.best { color: var(--green); background: var(--green-bg); border-radius: 6px; padding: 4px 10px; }
-.implied-prob { font-size: 11px; color: var(--t3); font-weight: 400; }
-.empty-state { text-align: center; padding: 60px 20px; color: var(--t3); }
-.empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--t2); }
-.empty-state p { font-size: 13px; }
-.error-msg { background: var(--red-bg); border: 1px solid rgba(239,68,68,.3); color: var(--red); padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
-.telegram-setup { background: var(--bg2); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; }
-.telegram-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-.telegram-row .input-group input { min-width: 220px; }
+.odds-cell { font-family: 'SF Mono','Fira Code',monospace; font-weight: 700; }
+.odds-cell.best { color: var(--green); background: var(--green-bg); padding: 2px 8px; }
+.implied-prob { font-size: 10px; color: var(--t3); }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--t3); }
+.empty-state h3 { font-size: 14px; margin-bottom: 6px; color: var(--t2); }
+.empty-state p { font-size: 12px; }
+.error-msg { background: var(--red-bg); border: 1px solid var(--red); color: var(--red); padding: 10px 14px; font-size: 12px; margin-bottom: 12px; }
+.telegram-setup { background: #fff; border: 1px solid var(--brd); padding: 16px; }
+.telegram-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.telegram-row .input-group input { min-width: 200px; }
 .telegram-status-ok { color: var(--green); }
 .telegram-status-err { color: var(--red); }
 @media (max-width: 768px) {
   .app-header, .tab-bar, .tab-content { padding-left: 16px; padding-right: 16px; }
   .whale-grid, .rec-grid { grid-template-columns: 1fr; }
   .metrics-row { grid-template-columns: repeat(2,1fr); }
-  .signal-card { grid-template-columns: auto 1fr; }
-  .signal-right { grid-column: 2; justify-self: start; }
+  .signal-table { font-size: 11px; }
 }
 </style>
 </head>
@@ -149,27 +144,24 @@ body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-seri
 
 <header class="app-header">
   <div class="app-title">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#3b82f6"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient></defs>
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-    <span>Prediction Dashboard</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D2E6B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span>PREDICTION DASHBOARD</span>
   </div>
-  <div class="header-right"><span class="last-updated" id="lastUpdated"></span></div>
+  <div><span class="last-updated" id="lastUpdated"></span></div>
 </header>
 
 <nav class="tab-bar">
-  <button class="tab-btn active" data-tab="whales">Polymarket Whale Tracker</button>
-  <button class="tab-btn" data-tab="recommended">Recommended Positions</button>
+  <button class="tab-btn active" data-tab="whales">Whale Tracker</button>
+  <button class="tab-btn" data-tab="recommended">Recommended</button>
   <button class="tab-btn" data-tab="odds">Odds Analyzer</button>
 </nav>
 
 <div class="tab-content active" id="tab-whales">
   <div class="metrics-row">
-    <div class="metric-card"><div class="metric-label">Traders Analyzed</div><div class="metric-value blue" id="metricTraders">--</div></div>
-    <div class="metric-card"><div class="metric-label">Signals Found</div><div class="metric-value purple" id="metricSignals">--</div></div>
-    <div class="metric-card"><div class="metric-label">Strongest Signal</div><div class="metric-value green" id="metricStrongest">--</div><div class="metric-sub" id="metricStrongestName"></div></div>
-    <div class="metric-card"><div class="metric-label">Positions Tracked</div><div class="metric-value yellow" id="metricPositions">--</div></div>
+    <div class="metric-card"><div class="metric-label">Traders Analyzed</div><div class="metric-value" id="metricTraders">--</div></div>
+    <div class="metric-card"><div class="metric-label">Signals Found</div><div class="metric-value" id="metricSignals">--</div></div>
+    <div class="metric-card"><div class="metric-label">Strongest Signal</div><div class="metric-value" id="metricStrongest">--</div><div class="metric-sub" id="metricStrongestName"></div></div>
+    <div class="metric-card"><div class="metric-label">Positions Tracked</div><div class="metric-value" id="metricPositions">--</div></div>
   </div>
   <div class="last-updated-row" id="lastUpdatedRow"></div>
   <div class="progress-container" id="progressContainer">
@@ -177,37 +169,34 @@ body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-seri
     <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBar"></div></div>
   </div>
   <div class="refresh-row">
-    <button class="btn btn-primary" id="refreshWhales" onclick="loadWhaleData()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Refresh Data
-    </button>
+    <button class="btn btn-primary" id="refreshWhales" onclick="loadWhaleData()">REFRESH</button>
     <span class="countdown-text" id="countdownText"></span>
   </div>
   <div id="whaleError"></div>
   <div id="signalSection" style="display:none">
     <div class="section-header"><div class="section-title">Whale Consensus Signals</div><span class="section-badge badge-green" id="signalCount"></span></div>
-    <div class="signal-list" id="signalList"></div>
+    <div id="signalList"></div>
   </div>
   <div id="whaleSection" style="display:none">
     <div class="section-header"><div class="section-title">Top Whale Profiles</div><span class="section-badge badge-purple" id="whaleCount"></span></div>
     <div class="whale-grid" id="whaleGrid"></div>
   </div>
-  <div style="margin-top:32px">
+  <div style="margin-top:24px">
     <div class="section-header"><div class="section-title">Telegram Alerts</div><span class="section-badge" id="telegramBadge" style="display:none"></span></div>
     <div class="telegram-setup">
       <div class="telegram-row">
         <div class="input-group"><label>Bot Token</label><input type="password" id="telegramBotToken" placeholder="123456:ABC-DEF..."/></div>
         <div class="input-group"><label>Chat ID</label><input type="text" id="telegramChatId" placeholder="e.g. 8648258173"/></div>
-        <div class="input-group"><label>&nbsp;</label><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="saveTelegramConfig()">Save</button><button class="btn" onclick="testTelegram()">Test</button></div></div>
+        <div class="input-group"><label>&nbsp;</label><div style="display:flex;gap:6px"><button class="btn btn-primary" onclick="saveTelegramConfig()">Save</button><button class="btn" onclick="testTelegram()">Test</button></div></div>
       </div>
-      <div id="telegramStatus" style="margin-top:8px;font-size:13px"></div>
+      <div id="telegramStatus" style="margin-top:6px;font-size:12px"></div>
     </div>
   </div>
 </div>
 
 <div class="tab-content" id="tab-recommended">
   <div class="section-header"><div class="section-title">Top Whale Conviction Picks</div><span class="section-badge badge-purple" id="recCount">0 picks</span></div>
-  <p style="font-size:13px;color:var(--t2);margin-bottom:20px">Markets where multiple top-100 whales are aligned. Ranked by conviction. Only showing markets with activity in the last 48 hours.</p>
+  <p style="font-size:12px;color:var(--t3);margin-bottom:16px">Ranked by conviction score. Only markets with whale activity in last 48 hours.</p>
   <div class="rec-grid" id="recGrid"><div class="empty-state"><h3>No recommendations yet</h3><p>Load whale data from the Whale Tracker tab.</p></div></div>
 </div>
 
@@ -218,7 +207,7 @@ body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-seri
     <div class="input-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadOdds()">Fetch Odds</button></div>
   </div>
   <div id="oddsError"></div>
-  <div id="oddsContent"><div class="empty-state"><h3>No odds loaded</h3><p>Enter your Odds API key and click Fetch Odds.</p></div></div>
+  <div id="oddsContent"><div class="empty-state"><h3>No odds loaded</h3><p>Enter your API key and click Fetch Odds.</p></div></div>
 </div>
 
 <script>
@@ -287,13 +276,13 @@ function cents(price) {
 }
 
 function timeAgo(ts) {
-  if (!ts) return 'Unknown';
+  if (!ts) return '--';
   var diff = Date.now() - new Date(ts).getTime();
   var hours = Math.floor(diff / 3600000);
   var days = Math.floor(diff / 86400000);
-  if (hours < 1) return 'Less than 1 hour ago';
-  if (hours < 24) return hours + ' hour' + (hours === 1 ? '' : 's') + ' ago';
-  return days + ' day' + (days === 1 ? '' : 's') + ' ago';
+  if (hours < 1) return '<1h ago';
+  if (hours < 24) return hours + 'h ago';
+  return days + 'd ago';
 }
 
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -315,9 +304,9 @@ function formatDateShort(ts) {
 function getFreshnessBadge(latest, highPrice, curPrice) {
   var hoursAgo = (Date.now() - new Date(latest).getTime()) / 3600000;
   var time = '';
-  if (hoursAgo > 168) time = '<span class="freshness-badge old">Old signal</span>';
-  else if (hoursAgo > 48) time = '<span class="freshness-badge stale">Going stale</span>';
-  var price = (highPrice && curPrice && Math.abs(highPrice - curPrice) <= 5) ? '<span class="freshness-badge active">Still active</span>' : '';
+  if (hoursAgo > 168) time = '<span class="freshness-badge old">OLD</span>';
+  else if (hoursAgo > 48) time = '<span class="freshness-badge stale">STALE</span>';
+  var price = (highPrice && curPrice && Math.abs(highPrice - curPrice) <= 5) ? '<span class="freshness-badge active">ACTIVE</span>' : '';
   return (price + ' ' + time).trim();
 }
 
@@ -328,13 +317,13 @@ function polymarketUrl(slug) {
 function tradeBtn(slug, large) {
   var url = polymarketUrl(slug);
   if (!url) return '';
-  if (large) return '<a class="btn-trade-lg" href="' + url + '" target="_blank" rel="noopener">Trade on Polymarket &rarr;</a>';
-  return '<a class="btn-trade" href="' + url + '" target="_blank" rel="noopener">Trade &rarr;</a>';
+  if (large) return '<a class="btn-trade-lg" href="' + url + '" target="_blank" rel="noopener">TRADE ON POLYMARKET</a>';
+  return '<a class="btn-trade" href="' + url + '" target="_blank" rel="noopener">TRADE</a>';
 }
 
 function tradeLink(slug) {
   var url = polymarketUrl(slug);
-  return url ? '<a class="position-trade-link" href="' + url + '" target="_blank" rel="noopener">Trade</a>' : '';
+  return url ? '<a class="position-trade-link" href="' + url + '" target="_blank" rel="noopener">TRADE</a>' : '';
 }
 
 function setProgress(pct, text) {
@@ -399,21 +388,16 @@ function renderSignals(signals) {
   if (signals.length === 0) return;
   $('signalSection').style.display = 'block';
   $('signalCount').textContent = signals.length + ' signals';
-  $('signalList').innerHTML = signals.map(function(s, i) {
+  var hdr = '<thead><tr><th>#</th><th>Market</th><th>Whales</th><th>Side</th><th>Avg Entry</th><th>High Entry</th><th>Latest</th><th>Status</th><th>Trade</th></tr></thead>';
+  var rows = signals.map(function(s, i) {
     var fb = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
-    var dates = '';
-    if (s.earliestEntryTimestamp || s.latestEntryTimestamp) {
-      dates = '<span>' + (s.earliestEntryTimestamp ? 'First entry: <span class="value">' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : '');
-      if (s.earliestEntryTimestamp && s.latestEntryTimestamp) dates += ' · ';
-      dates += (s.latestEntryTimestamp ? 'Latest: <span class="value">' + formatDateShort(s.latestEntryTimestamp) + '</span>' : '') + '</span>';
-    }
-    return '<div class="signal-card"><div class="signal-rank ' + (i < 3 ? 'top' : 'normal') + '">' + (i + 1) + '</div><div class="signal-info"><h3>' + escapeHtml(s.market) + '</h3><div class="signal-meta">' +
-      '<span><span class="value">' + s.whaleCount + '</span> whales aligned</span>' +
-      '<span>Avg entry: <span class="value">' + cents(s.avgEntry) + '</span></span>' +
-      (s.highestEntryPrice ? '<span>Highest entry: <span class="value">' + cents(s.highestEntryPrice) + '</span></span>' : '') +
-      dates + '</div>' + (fb ? '<div style="margin-top:6px">' + fb + '</div>' : '') +
-      '</div><div class="signal-right"><div class="signal-side ' + s.side.toLowerCase() + '">' + s.side + '</div>' + tradeBtn(s.slug, false) + '</div></div>';
+    var dateStr = '';
+    if (s.earliestEntryTimestamp) dateStr = formatDateShort(s.earliestEntryTimestamp);
+    if (s.earliestEntryTimestamp && s.latestEntryTimestamp) dateStr += ' → ';
+    if (s.latestEntryTimestamp) dateStr += formatDateShort(s.latestEntryTimestamp);
+    return '<tr><td class="rank">' + (i + 1) + '</td><td class="market">' + escapeHtml(s.market) + '</td><td class="num">' + s.whaleCount + '</td><td><span class="signal-side ' + s.side.toLowerCase() + '">' + s.side + '</span></td><td class="num">' + cents(s.avgEntry) + '</td><td class="num">' + (s.highestEntryPrice ? cents(s.highestEntryPrice) : '--') + '</td><td style="font-size:11px;color:var(--t3)">' + (dateStr || '--') + '</td><td>' + (fb || '--') + '</td><td>' + tradeBtn(s.slug, false) + '</td></tr>';
   }).join('');
+  $('signalList').innerHTML = '<table class="signal-table">' + hdr + '<tbody>' + rows + '</tbody></table>';
 }
 
 function renderWhales(whaleData) {
@@ -426,7 +410,7 @@ function renderWhales(whaleData) {
     var wallet = w.trader.wallet || '';
     var posHtml = '';
     if (w.positions.length === 0) {
-      posHtml = '<div style="font-size:12px;color:var(--t3)">No large positions</div>';
+      posHtml = '<div style="font-size:11px;color:var(--t3)">No large positions</div>';
     } else {
       posHtml = w.positions.map(function(p) {
         var side = p.outcome || (Number(p.size) > 0 ? 'YES' : 'NO');
@@ -445,7 +429,7 @@ function renderWhales(whaleData) {
         return '<div class="position-item"><div class="position-info-col"><span class="position-market" title="' + escapeHtml(title) + '">' + escapeHtml(title) + '</span><span class="position-details">' + details + '</span></div><span class="position-side ' + side.toLowerCase() + '">' + side + '</span><span class="position-size">' + formatMoney(size) + '</span>' + tradeLink(pSlug) + '</div>';
       }).join('');
     }
-    return '<div class="whale-card"><div class="whale-header"><div><div class="whale-wallet">' + (w.trader.userName ? escapeHtml(w.trader.userName) + ' &middot; ' : '') + shortWallet(wallet) + '</div><div class="whale-profit ' + (profit >= 0 ? 'positive' : 'negative') + '">' + formatMoney(profit) + '</div></div><div class="whale-rank-badge">#' + (i + 1) + '</div></div><div class="whale-positions"><div class="whale-positions-title">Open Positions (' + w.positions.length + ')</div>' + posHtml + '</div></div>';
+    return '<div class="whale-card"><div class="whale-header"><div><div class="whale-wallet">' + (w.trader.userName ? escapeHtml(w.trader.userName) + ' · ' : '') + shortWallet(wallet) + '</div><div class="whale-profit ' + (profit >= 0 ? 'positive' : 'negative') + '">' + formatMoney(profit) + '</div></div><div class="whale-rank-badge">#' + (i + 1) + '</div></div><div class="whale-positions"><div class="whale-positions-title">Open Positions (' + w.positions.length + ')</div>' + posHtml + '</div></div>';
   }).join('');
 }
 
@@ -463,12 +447,12 @@ function renderRecommended(signals) {
   }
   $('recGrid').innerHTML = top.map(function(s) {
     var fb = s.latestEntryTimestamp ? getFreshnessBadge(s.latestEntryTimestamp, s.highestEntryPrice ? s.highestEntryPrice * 100 : null, s.currentPrice ? s.currentPrice * 100 : null) : '';
-    return '<div class="rec-card"><div class="rec-card-header"><div class="rec-card-title">' + escapeHtml(s.market) + '</div><div class="signal-side ' + s.side.toLowerCase() + '" style="font-size:12px;padding:4px 12px">' + s.side + '</div></div><div class="rec-stats">' +
-      '<div class="rec-stat"><span class="label">Conviction</span><span class="val">' + s.whaleCount + '/100 whales</span></div>' +
+    return '<div class="rec-card"><div class="rec-card-header"><div class="rec-card-title">' + escapeHtml(s.market) + '</div><span class="signal-side ' + s.side.toLowerCase() + '" style="font-size:10px;padding:2px 8px">' + s.side + '</span></div><div class="rec-stats">' +
+      '<div class="rec-stat"><span class="label">Conviction</span><span class="val">' + s.whaleCount + '/100</span></div>' +
       '<div class="rec-stat"><span class="label">Current Price</span><span class="val">' + cents(s.avgEntry) + '</span></div>' +
-      '<div class="rec-stat"><span class="label">Last Whale Trade</span><span class="val">' + (s.latestEntryTimestamp ? timeAgo(s.latestEntryTimestamp) : 'Unknown') + '</span></div>' +
-      '<div class="rec-stat"><span class="label">Highest Entry</span><span class="val">' + (s.highestEntryPrice ? cents(s.highestEntryPrice) : '--') + '</span></div></div>' +
-      '<div class="rec-entry-info">' + (s.earliestEntryTimestamp ? '<span>First entry: ' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : '') +
+      '<div class="rec-stat"><span class="label">Last Trade</span><span class="val">' + (s.latestEntryTimestamp ? timeAgo(s.latestEntryTimestamp) : '--') + '</span></div>' +
+      '<div class="rec-stat"><span class="label">High Entry</span><span class="val">' + (s.highestEntryPrice ? cents(s.highestEntryPrice) : '--') + '</span></div></div>' +
+      '<div class="rec-entry-info">' + (s.earliestEntryTimestamp ? '<span>First: ' + formatDateShort(s.earliestEntryTimestamp) + '</span>' : '') +
       (s.latestEntryTimestamp ? '<span>Latest: ' + formatDateShort(s.latestEntryTimestamp) + ' (' + timeAgo(s.latestEntryTimestamp) + ')</span>' : '') +
       fb + '</div>' + tradeBtn(s.slug, true) + '</div>';
   }).join('');
@@ -561,7 +545,6 @@ function loadWhaleData() {
   var btn = $('refreshWhales');
   btn.disabled = true;
   $('whaleError').innerHTML = '';
-
   setProgress(5, 'Fetching top 100 traders...');
   Promise.all([
     fetchJSON('/api/polymarket-data/v1/leaderboard?category=OVERALL&timePeriod=ALL&orderBy=PNL&limit=50&offset=0'),
@@ -570,7 +553,6 @@ function loadWhaleData() {
     var traders = res[0].concat(res[1]);
     setProgress(15, 'Found ' + traders.length + ' traders...');
     $('metricTraders').textContent = traders.length;
-
     return processBatch(traders, function(trader) {
       var wallet = trader.proxyWallet || trader.address || trader.wallet;
       if (!wallet) return Promise.resolve({ trader: trader, positions: [] });
@@ -599,8 +581,7 @@ function loadWhaleData() {
     }, function(done, total) { setProgress(15 + (done / total) * 70, 'Fetching positions & trades... ' + done + '/' + total); });
   }).then(function(results) {
     setProgress(87, 'Analyzing signals...');
-    var whaleData = [];
-    var totalPos = 0;
+    var whaleData = [], totalPos = 0;
     for (var i = 0; i < results.length; i++) {
       if (results[i].status === 'fulfilled' && results[i].value) {
         totalPos += results[i].value.positions.length;
@@ -609,7 +590,6 @@ function loadWhaleData() {
     }
     $('metricPositions').textContent = totalPos;
     var signals = buildSignals(whaleData);
-
     setProgress(95, 'Sending alerts...');
     return sendSmartAlerts(signals).then(function() {
       lastSignals = signals;
@@ -617,27 +597,20 @@ function loadWhaleData() {
       if (signals.length > 0) {
         $('metricStrongest').textContent = signals[0].whaleCount + ' whales';
         $('metricStrongestName').textContent = signals[0].market.slice(0, 50);
-      } else {
-        $('metricStrongest').textContent = 'None';
-        $('metricStrongestName').textContent = '';
-      }
+      } else { $('metricStrongest').textContent = 'None'; $('metricStrongestName').textContent = ''; }
       renderSignals(signals);
       renderWhales(whaleData);
       renderRecommended(signals);
       setProgress(100, 'Complete!');
       setTimeout(function() { $('progressContainer').classList.remove('visible'); }, 1500);
       var now = new Date();
-      $('lastUpdated').textContent = 'Updated: ' + now.toLocaleTimeString();
+      $('lastUpdated').textContent = 'Updated ' + now.toLocaleTimeString();
       $('lastUpdatedRow').textContent = 'Last updated at ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
     });
   }).catch(function(err) {
-    $('whaleError').innerHTML = '<div class="error-msg">Error: ' + escapeHtml(err.message) + '</div>';
+    $('whaleError').innerHTML = '<div class="error-msg">' + escapeHtml(err.message) + '</div>';
     $('progressContainer').classList.remove('visible');
-  }).finally(function() {
-    btn.disabled = false;
-    isRefreshing = false;
-    startCountdown();
-  });
+  }).finally(function() { btn.disabled = false; isRefreshing = false; startCountdown(); });
 }
 
 /* === ODDS === */
@@ -653,7 +626,7 @@ function americanToImplied(odds) {
 
 function loadOdds() {
   var key = apiKeyInput.value.trim();
-  if (!key) { $('oddsError').innerHTML = '<div class="error-msg">Please enter your Odds API key.</div>'; return; }
+  if (!key) { $('oddsError').innerHTML = '<div class="error-msg">Enter your Odds API key.</div>'; return; }
   $('oddsError').innerHTML = '';
   var content = $('oddsContent');
   content.innerHTML = '<div class="empty-state"><p>Loading odds...</p></div>';
@@ -677,7 +650,7 @@ function loadOdds() {
       }).join('');
       return '<div class="game-card"><div class="game-header"><div class="game-matchup">' + escapeHtml(game.away_team) + ' @ ' + escapeHtml(game.home_team) + '</div><div class="game-time">' + new Date(game.commence_time).toLocaleString() + '</div></div><table class="odds-table"><thead><tr><th>Bookmaker</th>' + teams.map(function(t) { return '<th>' + escapeHtml(t) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
     }).join('');
-  }).catch(function(err) { $('oddsError').innerHTML = '<div class="error-msg">Error: ' + escapeHtml(err.message) + '</div>'; content.innerHTML = ''; });
+  }).catch(function(err) { $('oddsError').innerHTML = '<div class="error-msg">' + escapeHtml(err.message) + '</div>'; content.innerHTML = ''; });
 }
 
 /* === INIT === */
