@@ -110,19 +110,23 @@ body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 .input-group input:focus, .input-group select:focus { border-color: var(--accent); }
 .input-group input { min-width: 240px; }
 .input-group select { min-width: 140px; }
-.odds-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
-.game-card { background: #fff; border: 1px solid var(--brd); margin-bottom: 12px; overflow: hidden; }
-.game-header { padding: 12px 16px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
-.game-matchup { font-size: 14px; font-weight: 600; }
-.game-time { font-size: 11px; color: var(--t3); }
-.odds-table { width: 100%; border-collapse: collapse; }
-.odds-table th { padding: 8px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); background: var(--card); border-bottom: 1px solid var(--brd); }
-.odds-table td { padding: 8px 14px; font-size: 12px; border-bottom: 1px solid var(--brd); }
-.odds-table tr:last-child td { border-bottom: none; }
-.odds-table td:first-child { font-weight: 500; color: var(--t2); }
-.odds-cell { font-family: 'SF Mono','Fira Code',monospace; font-weight: 700; }
-.odds-cell.best { color: var(--green); background: var(--green-bg); padding: 2px 8px; }
-.implied-prob { font-size: 10px; color: var(--t3); }
+.arb-controls { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+.arb-card { background: #fff; border: 1px solid var(--brd); padding: 16px; margin-bottom: 10px; }
+.arb-card.profit { border-left: 3px solid var(--green); background: var(--green-bg); }
+.arb-matchup { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.arb-bets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.arb-bet { padding: 8px 10px; background: var(--card); border: 1px solid var(--brd); font-size: 12px; }
+.arb-bet .book { font-weight: 700; color: var(--accent); }
+.arb-bet .odds { font-family: 'SF Mono','Fira Code',monospace; font-weight: 700; }
+.arb-profit { font-size: 13px; font-weight: 800; color: var(--green); }
+.arb-table { width: 100%; border-collapse: collapse; border: 1px solid var(--brd); background: #fff; }
+.arb-table th { padding: 7px 10px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); background: var(--card); border-bottom: 1px solid var(--brd); }
+.arb-table td { padding: 7px 10px; font-size: 12px; border-bottom: 1px solid var(--brd); }
+.arb-table tr:last-child td { border-bottom: none; }
+.arb-table tr:hover { background: var(--hover); }
+.ip-green { color: var(--green); font-weight: 700; }
+.ip-yellow { color: var(--yellow); font-weight: 700; }
+.ip-red { color: var(--red); font-weight: 700; }
 .empty-state { text-align: center; padding: 48px 20px; color: var(--t3); }
 .empty-state h3 { font-size: 14px; margin-bottom: 6px; color: var(--t2); }
 .empty-state p { font-size: 12px; }
@@ -153,7 +157,7 @@ body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 <nav class="tab-bar">
   <button class="tab-btn active" data-tab="whales">Whale Tracker</button>
   <button class="tab-btn" data-tab="recommended">Recommended</button>
-  <button class="tab-btn" data-tab="odds">Odds Analyzer</button>
+  <button class="tab-btn" data-tab="odds">Arbitrage Calculator</button>
 </nav>
 
 <div class="tab-content active" id="tab-whales">
@@ -201,13 +205,15 @@ body { font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 </div>
 
 <div class="tab-content" id="tab-odds">
-  <div class="odds-controls">
+  <div class="arb-controls">
     <div class="input-group"><label>The Odds API Key</label><input type="text" id="oddsApiKey" placeholder="Enter your API key..."/></div>
-    <div class="input-group"><label>Sport</label><select id="sportSelect"><option value="basketball_nba">NBA</option><option value="americanfootball_nfl">NFL</option><option value="baseball_mlb">MLB</option><option value="icehockey_nhl">NHL</option></select></div>
-    <div class="input-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadOdds()">Fetch Odds</button></div>
+    <div class="input-group"><label>Sport</label><select id="sportSelect"><option value="basketball_nba">NBA</option><option value="baseball_mlb">MLB</option><option value="icehockey_nhl">NHL</option><option value="tennis_atp">ATP Tennis</option><option value="tennis_wta">WTA Tennis</option><option value="mma_mixed_martial_arts">MMA/UFC</option></select></div>
+    <div class="input-group"><label>Stake ($)</label><input type="number" id="arbStake" value="100" min="1" style="min-width:80px"/></div>
+    <div class="input-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="loadArbs()">SCAN FOR ARBS</button></div>
   </div>
-  <div id="oddsError"></div>
-  <div id="oddsContent"><div class="empty-state"><h3>No odds loaded</h3><p>Enter your API key and click Fetch Odds.</p></div></div>
+  <div id="arbError"></div>
+  <div id="arbOpps"></div>
+  <div id="arbAll"><div class="empty-state"><h3>No data loaded</h3><p>Enter your API key and scan for arbitrage opportunities.</p></div></div>
 </div>
 
 <script>
@@ -613,44 +619,121 @@ function loadWhaleData() {
   }).finally(function() { btn.disabled = false; isRefreshing = false; startCountdown(); });
 }
 
-/* === ODDS === */
+/* === ARBITRAGE === */
 var apiKeyInput = $('oddsApiKey');
 var savedKey = localStorage.getItem('oddsApiKey');
 if (savedKey) apiKeyInput.value = savedKey;
 apiKeyInput.addEventListener('input', function() { localStorage.setItem('oddsApiKey', apiKeyInput.value.trim()); });
+var prevArbKeys = new Set();
 
-function americanToImplied(odds) {
+function toImplied(odds) {
   odds = Number(odds);
-  return odds > 0 ? (100 / (odds + 100) * 100).toFixed(1) : (Math.abs(odds) / (Math.abs(odds) + 100) * 100).toFixed(1);
+  if (odds > 0) return 100 / (odds + 100);
+  return Math.abs(odds) / (Math.abs(odds) + 100);
 }
 
-function loadOdds() {
+function fmtOdds(odds) {
+  return Number(odds) > 0 ? '+' + odds : '' + odds;
+}
+
+function findBestOdds(game) {
+  var teams = [game.home_team, game.away_team];
+  var best = {};
+  for (var i = 0; i < teams.length; i++) best[teams[i]] = { odds: -Infinity, book: '', implied: 1 };
+  var bks = game.bookmakers || [];
+  for (var b = 0; b < bks.length; b++) {
+    var m = (bks[b].markets || []).find(function(x) { return x.key === 'h2h'; });
+    if (!m) continue;
+    for (var o = 0; o < m.outcomes.length; o++) {
+      var oc = m.outcomes[o];
+      if (best[oc.name] && oc.price > best[oc.name].odds) {
+        best[oc.name] = { odds: oc.price, book: bks[b].title, implied: toImplied(oc.price) };
+      }
+    }
+  }
+  return { teams: teams, best: best };
+}
+
+function loadArbs() {
   var key = apiKeyInput.value.trim();
-  if (!key) { $('oddsError').innerHTML = '<div class="error-msg">Enter your Odds API key.</div>'; return; }
-  $('oddsError').innerHTML = '';
-  var content = $('oddsContent');
-  content.innerHTML = '<div class="empty-state"><p>Loading odds...</p></div>';
-  fetchJSON('/api/odds/sports/' + $('sportSelect').value + '/odds/?apiKey=' + key + '&regions=us&markets=h2h&oddsFormat=american').then(function(data) {
-    if (!data || !data.length) { content.innerHTML = '<div class="empty-state"><h3>No games found</h3></div>'; return; }
-    content.innerHTML = data.map(function(game) {
-      var teams = [game.home_team, game.away_team];
-      var bks = game.bookmakers || [];
-      var best = {};
-      teams.forEach(function(t) { best[t] = -Infinity; });
-      bks.forEach(function(bk) { var m = (bk.markets || []).find(function(x) { return x.key === 'h2h'; }); if (m) m.outcomes.forEach(function(o) { if (best[o.name] !== undefined && o.price > best[o.name]) best[o.name] = o.price; }); });
-      var rows = bks.map(function(bk) {
-        var m = (bk.markets || []).find(function(x) { return x.key === 'h2h'; }); if (!m) return '';
-        var om = {}; m.outcomes.forEach(function(o) { om[o.name] = o.price; });
-        return '<tr><td>' + escapeHtml(bk.title) + '</td>' + teams.map(function(t) {
-          var p = om[t]; if (p == null) return '<td>--</td>';
-          var isBest = p === best[t] && best[t] > -Infinity;
-          var fmt = p > 0 ? '+' + p : '' + p;
-          return '<td><span class="odds-cell' + (isBest ? ' best' : '') + '">' + fmt + '</span> <span class="implied-prob">' + americanToImplied(p) + '%</span></td>';
-        }).join('') + '</tr>';
-      }).join('');
-      return '<div class="game-card"><div class="game-header"><div class="game-matchup">' + escapeHtml(game.away_team) + ' @ ' + escapeHtml(game.home_team) + '</div><div class="game-time">' + new Date(game.commence_time).toLocaleString() + '</div></div><table class="odds-table"><thead><tr><th>Bookmaker</th>' + teams.map(function(t) { return '<th>' + escapeHtml(t) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  if (!key) { $('arbError').innerHTML = '<div class="error-msg">Enter your Odds API key.</div>'; return; }
+  $('arbError').innerHTML = '';
+  $('arbOpps').innerHTML = '';
+  $('arbAll').innerHTML = '<div class="empty-state"><p>Scanning odds...</p></div>';
+  var sport = $('sportSelect').value;
+  var sportName = $('sportSelect').options[$('sportSelect').selectedIndex].text;
+  var stake = Number($('arbStake').value) || 100;
+
+  fetchJSON('/api/odds/sports/' + sport + '/odds/?apiKey=' + key + '&regions=us&markets=h2h&oddsFormat=american').then(function(data) {
+    if (!data || !data.length) { $('arbAll').innerHTML = '<div class="empty-state"><h3>No games found</h3></div>'; return; }
+
+    var arbs = [];
+    var allGames = [];
+
+    for (var g = 0; g < data.length; g++) {
+      var info = findBestOdds(data[g]);
+      var t1 = info.teams[0], t2 = info.teams[1];
+      var b1 = info.best[t1], b2 = info.best[t2];
+      if (!b1 || !b2 || b1.odds === -Infinity || b2.odds === -Infinity) continue;
+      var totalImp = b1.implied + b2.implied;
+      var totalPct = (totalImp * 100).toFixed(1);
+      var isArb = totalImp < 1;
+      var profitPct = isArb ? ((1 / totalImp - 1) * 100).toFixed(2) : 0;
+      var bet1 = isArb ? (stake * b1.implied / totalImp).toFixed(2) : 0;
+      var bet2 = isArb ? (stake * b2.implied / totalImp).toFixed(2) : 0;
+      var profit = isArb ? (stake / totalImp - stake).toFixed(2) : 0;
+      var row = { away: data[g].away_team, home: data[g].home_team, t1: t1, t2: t2, b1: b1, b2: b2, totalPct: totalPct, totalImp: totalImp, isArb: isArb, profitPct: profitPct, bet1: bet1, bet2: bet2, profit: profit, time: data[g].commence_time };
+      allGames.push(row);
+      if (isArb) arbs.push(row);
+    }
+
+    arbs.sort(function(a, b) { return Number(b.profitPct) - Number(a.profitPct); });
+
+    // Arb alerts
+    var currentArbKeys = new Set();
+    for (var a = 0; a < arbs.length; a++) {
+      var ak = arbs[a].t1 + '|' + arbs[a].t2;
+      currentArbKeys.add(ak);
+      if (!prevArbKeys.has(ak)) {
+        var r = arbs[a];
+        var msg = '⚡ <b>ARB OPPORTUNITY</b>\n\n<b>Sport:</b> ' + sportName +
+          '\n<b>Game:</b> ' + r.away + ' vs ' + r.home +
+          '\n\nBet $' + r.bet1 + ' on ' + r.t1 + ' at ' + r.b1.book + ' (' + fmtOdds(r.b1.odds) + ')' +
+          '\nBet $' + r.bet2 + ' on ' + r.t2 + ' at ' + r.b2.book + ' (' + fmtOdds(r.b2.odds) + ')' +
+          '\n\n<b>Guaranteed profit:</b> $' + r.profit + ' (' + r.profitPct + '%)' +
+          '\n\nAct fast - arbs close quickly';
+        postJSON('/api/send-signal', { message: msg }).catch(function() {});
+      }
+    }
+    prevArbKeys = currentArbKeys;
+
+    // Render arb opportunities
+    if (arbs.length > 0) {
+      $('arbOpps').innerHTML = '<div class="section-header"><div class="section-title">Arb Opportunities</div><span class="section-badge badge-green">' + arbs.length + ' found</span></div>' +
+        arbs.map(function(r) {
+          return '<div class="arb-card profit"><div class="arb-matchup">' + escapeHtml(r.away) + ' vs ' + escapeHtml(r.home) + '</div>' +
+            '<div class="arb-bets"><div class="arb-bet"><span class="book">' + escapeHtml(r.b1.book) + '</span><br>' + escapeHtml(r.t1) + ' <span class="odds">' + fmtOdds(r.b1.odds) + '</span><br><strong>Bet $' + r.bet1 + '</strong></div>' +
+            '<div class="arb-bet"><span class="book">' + escapeHtml(r.b2.book) + '</span><br>' + escapeHtml(r.t2) + ' <span class="odds">' + fmtOdds(r.b2.odds) + '</span><br><strong>Bet $' + r.bet2 + '</strong></div></div>' +
+            '<div class="arb-profit">Guaranteed profit: $' + r.profit + ' (' + r.profitPct + '%)</div></div>';
+        }).join('');
+    } else {
+      $('arbOpps').innerHTML = '<div class="section-header"><div class="section-title">Arb Opportunities</div><span class="section-badge">0 found</span></div><p style="font-size:12px;color:var(--t3);margin-bottom:16px">No arbitrage opportunities found. Markets are efficient right now.</p>';
+    }
+
+    // Render all games table
+    var hdr = '<thead><tr><th>Game</th><th>Time</th><th>Best ' + escapeHtml(allGames[0] ? allGames[0].t1 : 'Home') + '</th><th>Best ' + escapeHtml(allGames[0] ? allGames[0].t2 : 'Away') + '</th><th>Total Implied</th></tr></thead>';
+    var rows = allGames.map(function(r) {
+      var cls = r.totalImp < 1 ? 'ip-green' : r.totalImp <= 1.05 ? 'ip-yellow' : 'ip-red';
+      return '<tr><td style="font-weight:600">' + escapeHtml(r.away) + ' @ ' + escapeHtml(r.home) + '</td>' +
+        '<td style="color:var(--t3);font-size:11px">' + new Date(r.time).toLocaleString() + '</td>' +
+        '<td>' + fmtOdds(r.b1.odds) + ' <span style="color:var(--t3);font-size:10px">(' + (r.b1.implied * 100).toFixed(1) + '%) ' + escapeHtml(r.b1.book) + '</span></td>' +
+        '<td>' + fmtOdds(r.b2.odds) + ' <span style="color:var(--t3);font-size:10px">(' + (r.b2.implied * 100).toFixed(1) + '%) ' + escapeHtml(r.b2.book) + '</span></td>' +
+        '<td class="' + cls + '">' + r.totalPct + '%</td></tr>';
     }).join('');
-  }).catch(function(err) { $('oddsError').innerHTML = '<div class="error-msg">' + escapeHtml(err.message) + '</div>'; content.innerHTML = ''; });
+    $('arbAll').innerHTML = '<div class="section-header" style="margin-top:20px"><div class="section-title">All Games</div><span class="section-badge">' + allGames.length + ' games</span></div>' +
+      '<table class="arb-table">' + hdr + '<tbody>' + rows + '</tbody></table>';
+
+  }).catch(function(err) { $('arbError').innerHTML = '<div class="error-msg">' + escapeHtml(err.message) + '</div>'; $('arbAll').innerHTML = ''; });
 }
 
 /* === INIT === */
